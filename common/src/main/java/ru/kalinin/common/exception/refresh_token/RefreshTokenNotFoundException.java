@@ -1,7 +1,9 @@
-package ru.kalinin.common.exception;
+package ru.kalinin.common.exception.refresh_token;
 
-public class RefreshTokenNotFoundException extends RuntimeException {
-  public RefreshTokenNotFoundException(String message) {
-    super(message);
-  }
+import ru.kalinin.common.exception.NotFoundException;
+
+public class RefreshTokenNotFoundException extends NotFoundException {
+    public RefreshTokenNotFoundException(String token) {
+        super("Refresh token не найден: " + token);
+    }
 }

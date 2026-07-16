@@ -1,4 +1,10 @@
 package ru.kalinin.auth.repository;
 
-public class RefreshTokenRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.kalinin.auth.entity.RefreshToken;
+
+import java.util.Optional;
+
+public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
+    Optional<RefreshToken> findByToken(String token);
 }

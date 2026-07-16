@@ -1,4 +1,4 @@
-package ru.kalinin.common.dto;
+package ru.kalinin.common.exception;
 
 public abstract class CustomException extends RuntimeException {
     public CustomException(String message) {

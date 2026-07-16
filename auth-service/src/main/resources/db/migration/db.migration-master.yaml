@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - include:
+      file: db/migration/v1/01-create-users-table.sql
+      relativeToChangelogFile: false
+
+  - include:
+      file: db/migration/v1/02-create-refresh-tokens-table.sql
+      relativeToChangelogFile: false

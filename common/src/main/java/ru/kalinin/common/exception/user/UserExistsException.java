@@ -1,8 +1,6 @@
-package ru.kalinin.common.exception;
+package ru.kalinin.common.exception.user;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import ru.kalinin.common.dto.CustomException;
+import ru.kalinin.common.exception.CustomException;
 
 public class UserExistsException extends CustomException {
 

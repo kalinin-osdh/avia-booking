@@ -1,0 +1,42 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/auth_db
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/migration/db.migration-master.yaml
+    default-schema: public
+    drop-first: false
+
+jwt:
+  secret: 8c2a7b4f9e1d6a3c5f8b0d2e4a6c8e0f2a4b6d8f0e2c4a6b8d0f2e4a6c8e0f
+  access-token:
+    expiration: 900000
+  refresh-token:
+    expiration: 604800000
+
+logging:
+  level:
+    ru.kalinin.auth: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    liquibase: DEBUG

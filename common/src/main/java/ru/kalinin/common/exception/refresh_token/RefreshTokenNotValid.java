@@ -1,9 +1,10 @@
-package ru.kalinin.common.exception;
+package ru.kalinin.common.exception.refresh_token;
 
-public class RefreshTokenNotValid extends RuntimeException {
+import ru.kalinin.common.exception.CustomException;
 
-    public RefreshTokenNotValid(String token) {
-        super("Refresh token is not valid: " + token + "\n"
-                + "Нужно провести повторную аутентификацию пользователя");
+public class RefreshTokenNotValid extends CustomException {
+
+    public RefreshTokenNotValid() {
+        super("Нужно провести повторную аутентификацию пользователя");
     }
 }
