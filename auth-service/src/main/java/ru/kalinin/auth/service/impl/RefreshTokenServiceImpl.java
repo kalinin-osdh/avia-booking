@@ -1,6 +1,7 @@
 package ru.kalinin.auth.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kalinin.auth.entity.RefreshToken;
@@ -22,6 +23,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final RefreshTokenRepository repository;
     private final SecureRandom secureRandom = new SecureRandom();
     private static final int TOKEN_LENGTH = 32;
+
+    @Value("${jwt.refresh-token.expiration:604800000}")
+    private long refreshTokenExpiration;
 
     @Override
     public String generateRefreshToken(User user) {
@@ -62,7 +66,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(token)
                 .user(user)
-                .expiresAt(LocalDateTime.now().plusDays(7))
+                .expiresAt(LocalDateTime.now().plusSeconds(refreshTokenExpiration))
                 .revoked(false)
                 .build();
 

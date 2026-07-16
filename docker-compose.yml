@@ -12,6 +12,18 @@ services:
       - "5433:5432"
     volumes:
       - postgres-auth-data:/var/lib/postgresql/data
+  postgres-flight:
+    image: postgres:16-alpine
+    container_name: postgres-flight
+    environment:
+      POSTGRES_DB: flight_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-flight-data:/var/lib/postgresql/data
 
 volumes:
   postgres-auth-data:
+  postgres-flight-data:

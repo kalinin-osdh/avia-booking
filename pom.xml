@@ -20,6 +20,7 @@
     <modules>
         <module>auth-service</module>
         <module>common</module>
+        <module>flight-service</module>
     </modules>
 
     <properties>

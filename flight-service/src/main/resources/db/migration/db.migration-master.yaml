@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - include:
+      file: db/migration/v1/01-create-flight-tabble.sql
+      relativeToChangelogFile: false
+
+  - include:
+      file: db/migration/v1/02-create-seat-table.sql
+      relativeToChangelogFile: false
