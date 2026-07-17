@@ -10,6 +10,7 @@ import ru.kalinin.auth.entity.User;
 import ru.kalinin.auth.repository.UserRepository;
 
 import java.util.Collections;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -22,10 +23,11 @@ public class CustomUserDetailsService implements UserDetailsService {
                 () -> new UsernameNotFoundException(username)
         );
 
-        return new org.springframework.security.core.userdetails.User(
+        return new CustomUserDetails(
+                user.getId(),
                 user.getUsername(),
                 user.getPassword(),
-                Collections.singleton(new SimpleGrantedAuthority(user.getRole().toString()))
+                List.of(new SimpleGrantedAuthority(user.getRole().toString()))
         );
     }
 }

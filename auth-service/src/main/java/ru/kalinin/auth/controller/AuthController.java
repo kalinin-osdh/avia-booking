@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +14,7 @@ import ru.kalinin.auth.dto.request.AuthRequest;
 import ru.kalinin.auth.dto.request.RefreshRequest;
 import ru.kalinin.auth.dto.response.AuthResponse;
 import ru.kalinin.auth.service.interfaces.AuthService;
+import ru.kalinin.common.security.dto.JwtUserPrincipal;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -38,8 +38,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@AuthenticationPrincipal UserDetails userDetails) {
-        authService.logout(userDetails.getUsername());
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal JwtUserPrincipal user) {
+        authService.logout(user.username());
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok().build();
     }

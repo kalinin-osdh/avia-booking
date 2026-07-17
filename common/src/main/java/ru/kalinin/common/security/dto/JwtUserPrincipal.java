@@ -1,14 +1,5 @@
-package ru.kalinin.common.dto;
+package ru.kalinin.common.security.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.springframework.security.core.GrantedAuthority;
+public record JwtUserPrincipal(Long id, String username) {
 
-import java.util.Collection;
-
-@Getter
-@AllArgsConstructor
-public class JwtUserPrincipal {
-    private final String username;
-    private final Collection<? extends GrantedAuthority> authorities;
 }

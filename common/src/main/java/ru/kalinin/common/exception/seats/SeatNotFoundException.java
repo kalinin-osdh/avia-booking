@@ -1,4 +1,10 @@
-package ru.kalinin.common.exception;
+package ru.kalinin.common.exception.seats;
 
-public class SeatNotFoundException {
+import ru.kalinin.common.exception.NotFoundException;
+
+public class SeatNotFoundException extends NotFoundException {
+
+    public SeatNotFoundException(Long id) {
+        super("Место не найдено id: " + id);
+    }
 }

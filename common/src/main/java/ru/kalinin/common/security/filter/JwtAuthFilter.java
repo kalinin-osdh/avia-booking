@@ -1,5 +1,6 @@
-package ru.kalinin.common.security;
+package ru.kalinin.common.security.filter;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,7 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.kalinin.common.dto.JwtUserPrincipal;
+import ru.kalinin.common.security.dto.JwtUserPrincipal;
+import ru.kalinin.common.security.service.JwtService;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -22,7 +24,6 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
-    //private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -37,37 +38,33 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
 
-        String username;
-
         try {
-            username = jwtService.extractUsername(token);
-        } catch (Exception e) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+            if (!jwtService.isTokenValid(token)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                JwtUserPrincipal principal = jwtService.extractUserPrincipal(token);
+                String role = jwtService.extractRole(token);
+                Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(role));
 
-            String role = jwtService.extractRole(token);
-            Collection<? extends GrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(role));
-            JwtUserPrincipal principal = new JwtUserPrincipal(username, authorities);
-
-            if (jwtService.isTokenValid(token)) {
-                UsernamePasswordAuthenticationToken authToken =
+                UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(
                                 principal,
                                 null,
                                 authorities
                         );
 
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
-        }
 
+
+        } catch (JwtException e) {
+            SecurityContextHolder.clearContext();
+        }
         filterChain.doFilter(request, response);
     }
 }

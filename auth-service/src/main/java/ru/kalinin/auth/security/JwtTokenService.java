@@ -21,12 +21,13 @@ public class JwtTokenService {
     @Value("${jwt.access-token.expiration}")
     private long jwtExpirationMs;
 
-    public String generateAccessToken(UserDetails userDetails) {
+    public String generateAccessToken(CustomUserDetails userDetails) {
         return generateTokenClaims(userDetails);
     }
 
-    private String generateTokenClaims(UserDetails userDetails) {
+    private String generateTokenClaims(CustomUserDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("userId", userDetails.getId());
         extraClaims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
         return Jwts.builder()
                 .claims(extraClaims)

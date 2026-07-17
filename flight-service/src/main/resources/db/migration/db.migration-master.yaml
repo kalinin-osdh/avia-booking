@@ -1,6 +1,6 @@
 databaseChangeLog:
   - include:
-      file: db/migration/v1/01-create-flight-tabble.sql
+      file: db/migration/v1/01-create-flights-table.sql
       relativeToChangelogFile: false
 
   - include:

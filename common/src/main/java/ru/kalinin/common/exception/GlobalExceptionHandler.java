@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.kalinin.common.dto.ErrorResponse;
+import ru.kalinin.common.exception.flights.FlightExistsException;
 import ru.kalinin.common.exception.refresh_token.RefreshTokenNotValid;
 import ru.kalinin.common.exception.user.UserExistsException;
 
@@ -51,6 +52,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleException(UserExistsException ex){
         return new ErrorResponse("Пользователь уже существует", ex.getMessage());
+    }
+
+    @ExceptionHandler(FlightExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleException(FlightExistsException ex){
+        return new ErrorResponse("Полет уже существует", ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

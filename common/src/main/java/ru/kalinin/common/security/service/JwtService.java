@@ -1,14 +1,20 @@
-package ru.kalinin.common.security;
+package ru.kalinin.common.security.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+import ru.kalinin.common.security.dto.JwtUserPrincipal;
 
 import javax.crypto.SecretKey;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
 import java.util.function.Function;
 
 @Service
@@ -26,6 +32,14 @@ public class JwtService {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public JwtUserPrincipal extractUserPrincipal(String token){
+        return new JwtUserPrincipal(extractUserId(token), extractUsername(token));
+    }
+
+    private Long extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("userId", Long.class));
     }
 
     public String extractRole(String token) {

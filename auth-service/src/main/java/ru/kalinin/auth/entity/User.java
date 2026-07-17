@@ -24,17 +24,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Username cannot be null")
-    @Size(min = 5, max = 20, message = "Username must be between 5 and 20")
     @Column(unique = true, nullable = false, length = 20)
     private String username;
 
-    @NotBlank(message = "Password cannot be null")
-    @Size(min = 8, max = 255, message = "Username must be at least 8")
     @Column(nullable = false)
     private String password;
 
-    @NotNull(message = "Role cannot be null")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default

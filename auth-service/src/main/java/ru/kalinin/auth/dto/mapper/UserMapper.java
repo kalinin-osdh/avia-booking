@@ -6,8 +6,10 @@ import org.springframework.stereotype.Component;
 import ru.kalinin.auth.dto.request.AuthRequest;
 import ru.kalinin.auth.dto.response.AuthResponse;
 import ru.kalinin.auth.entity.User;
+import ru.kalinin.auth.security.CustomUserDetails;
 
 import java.util.Collections;
+import java.util.List;
 
 @Component
 public class UserMapper {
@@ -22,11 +24,12 @@ public class UserMapper {
         return new AuthResponse(username,accessToken,refreshToken);
     }
 
-    public UserDetails toUserDetails(User user){
-        return new org.springframework.security.core.userdetails.User(
+    public CustomUserDetails toUserDetails(User user){
+        return new CustomUserDetails(
+                user.getId(),
                 user.getUsername(),
                 user.getPassword(),
-                Collections.singleton(new SimpleGrantedAuthority(user.getRole().toString()))
+                List.of(new SimpleGrantedAuthority(user.getRole().toString()))
         );
     }
 }
