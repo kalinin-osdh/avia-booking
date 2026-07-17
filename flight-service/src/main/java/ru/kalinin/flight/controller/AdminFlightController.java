@@ -2,16 +2,15 @@ package ru.kalinin.flight.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.kalinin.common.dto.PageResponse;
 import ru.kalinin.flight.dto.request.FlightPageRequest;
 import ru.kalinin.flight.dto.request.FlightRequest;
+import ru.kalinin.flight.dto.request.FlightUpdateRequest;
 import ru.kalinin.flight.dto.response.FlightAdminResponse;
-import ru.kalinin.flight.entity.Flight;
 import ru.kalinin.flight.service.interfaces.AdminFlightService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admin/flights")
@@ -20,7 +19,7 @@ public class AdminFlightController {
     private final AdminFlightService adminFlightService;
 
     @GetMapping
-    public ResponseEntity<Page<FlightAdminResponse>> findAllFlights(
+    public ResponseEntity<PageResponse<FlightAdminResponse>> findAllFlights(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -35,24 +34,27 @@ public class AdminFlightController {
                 .departureCity(departureCity)
                 .arrivalCity(arrivalCity)
                 .build();
+
         return ResponseEntity.ok().body(adminFlightService.findAll(request));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<FlightAdminResponse> findFlightById(@PathVariable Long id){
+        return ResponseEntity.ok(adminFlightService.findById(id));
+    }
     @PostMapping
     public ResponseEntity<FlightAdminResponse> createFlight(@Valid @RequestBody FlightRequest request){
-        // todo создание полета
-        return null;
+        return ResponseEntity.status(HttpStatus.CREATED).body(adminFlightService.create(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FlightAdminResponse> updateFlight(@PathVariable Long id, @Valid @RequestBody FlightRequest request){
-        // todo обновление полета
-        return null;
+    public ResponseEntity<FlightAdminResponse> updateFlight(@PathVariable Long id, @Valid @RequestBody FlightUpdateRequest request){
+        return ResponseEntity.ok(adminFlightService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFlight(@PathVariable Long id){
-        // todo удаление полета
-        return null;
+        adminFlightService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

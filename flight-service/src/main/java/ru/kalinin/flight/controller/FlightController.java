@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.kalinin.common.dto.PageResponse;
 import ru.kalinin.flight.dto.request.FlightPageRequest;
 import ru.kalinin.flight.dto.response.FlightWithOutSeatsResponse;
 import ru.kalinin.flight.dto.response.FlightWithSeatsResponse;
@@ -17,7 +18,7 @@ public class FlightController {
     private final FlightService flightService;
 
     @GetMapping
-    public ResponseEntity<Page<FlightWithOutSeatsResponse>> findFlights(
+    public ResponseEntity<PageResponse<FlightWithOutSeatsResponse>> findFlights(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -43,5 +44,3 @@ public class FlightController {
         return ResponseEntity.ok().body(flightService.findByFlightNumber(flightNumber, status));
     }
 }
-
-// todo настроить Spring security и проверить пагинацию.

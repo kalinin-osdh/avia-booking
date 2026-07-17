@@ -7,11 +7,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.kalinin.common.dto.PageResponse;
 import ru.kalinin.common.exception.flights.FlightExistsException;
 import ru.kalinin.common.exception.flights.FlightNotFoundException;
 import ru.kalinin.flight.dto.mapper.FlightMapper;
 import ru.kalinin.flight.dto.request.FlightPageRequest;
 import ru.kalinin.flight.dto.request.FlightRequest;
+import ru.kalinin.flight.dto.request.FlightUpdateRequest;
 import ru.kalinin.flight.dto.response.FlightAdminResponse;
 import ru.kalinin.flight.entity.Flight;
 import ru.kalinin.flight.repository.FlightRepository;
@@ -25,7 +27,8 @@ public class AdminFlightServiceImpl implements AdminFlightService {
     private final FlightMapper flightMapper;
 
     @Override
-    public Page<FlightAdminResponse> findAll(FlightPageRequest request) {
+    @Transactional(readOnly = true)
+    public PageResponse<FlightAdminResponse> findAll(FlightPageRequest request) {
         Sort sort = Sort.by(Sort.Direction.fromString(request.getSortDirection()),
                 request.getSortBy());
 
@@ -56,8 +59,8 @@ public class AdminFlightServiceImpl implements AdminFlightService {
     }
 
     @Override
-    public FlightAdminResponse update(Long id, FlightRequest request) {
-        Flight flight = findById(id);
+    public FlightAdminResponse update(Long id, FlightUpdateRequest request) {
+        Flight flight = getById(id);
 
         flight.setDepartureCity(request.getDepartureCity());
         flight.setArrivalCity(request.getArrivalCity());
@@ -71,16 +74,28 @@ public class AdminFlightServiceImpl implements AdminFlightService {
 
     @Override
     public void delete(Long id) {
-        Flight flight = findById(id);
+        Flight flight = getById(id);
 
         flightRepository.delete(flight);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Flight findById(Long id) {
+    public FlightAdminResponse findById(Long id) {
+        Flight flight = getById(id);
+        return flightMapper.toFlightAdminResponse(flight);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Flight getById(Long id) {
         return flightRepository.findById(id).orElseThrow(
                 () -> new FlightNotFoundException(id)
         );
+    }
+
+    @Override
+    public int changeAvailableSeats(Long id, Integer delta) {
+        return flightRepository.updateAvailableSeats(id, delta);
     }
 }

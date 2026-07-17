@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.kalinin.common.exception.seats.SeatNotFoundException;
 import ru.kalinin.flight.dto.mapper.SeatMapper;
 import ru.kalinin.flight.dto.request.SeatRequest;
-import ru.kalinin.flight.dto.response.FlightAdminResponse;
 import ru.kalinin.flight.dto.response.SeatAdminResponse;
 import ru.kalinin.flight.entity.Flight;
 import ru.kalinin.flight.entity.Seat;
@@ -26,7 +25,7 @@ public class AdminSeatServiceImpl implements AdminSeatService {
 
     @Override
     public List<SeatAdminResponse> findByFlightId(Long id) {
-        Flight flight = adminFlightService.findById(id);
+        Flight flight = adminFlightService.getById(id);
 
         List<Seat> seats = seatRepository.findSeatsByFlight(flight);
 
@@ -35,10 +34,12 @@ public class AdminSeatServiceImpl implements AdminSeatService {
 
     @Override
     public SeatAdminResponse create(SeatRequest request) {
-        Flight flight = adminFlightService.findById(request.getFlightId());
+        Flight flight = adminFlightService.getById(request.getFlightId());
         Seat seat = seatMapper.toEntity(request);
         seat.setFlight(flight);
-
+        int result = adminFlightService.changeAvailableSeats(flight.getId(), 1);
+        if (result==0)
+            throw new IllegalStateException("someException");
         Seat savedSeat = seatRepository.save(seat);
 
         return seatMapper.toSeatAdminResponse(savedSeat);
@@ -46,8 +47,8 @@ public class AdminSeatServiceImpl implements AdminSeatService {
 
     @Override
     public SeatAdminResponse update(Long id, SeatRequest request) {
-        Seat seat = findById(id);
-        Flight flight = adminFlightService.findById(request.getFlightId());
+        Seat seat = getById(id);
+        Flight flight = adminFlightService.getById(request.getFlightId());
 
         seat.setFlight(flight);
         seat.setSeatNumber(request.getSeatNumber());
@@ -61,13 +62,16 @@ public class AdminSeatServiceImpl implements AdminSeatService {
 
     @Override
     public void delete(Long id) {
-        Seat seat = findById(id);
-
+        Seat seat = getById(id);
+        int result = adminFlightService.changeAvailableSeats(seat.getFlight().getId(), -1);
+        if (result==0)
+            throw new IllegalStateException("someException");
         seatRepository.delete(seat);
     }
 
     @Override
-    public Seat findById(Long id) {
+    @Transactional(readOnly = true)
+    public Seat getById(Long id) {
         return seatRepository.findById(id).orElseThrow(
                 ()-> new SeatNotFoundException(id)
         );

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.kalinin.common.dto.PageResponse;
 import ru.kalinin.common.exception.flights.FlightNotFoundException;
 import ru.kalinin.flight.dto.mapper.FlightMapper;
 import ru.kalinin.flight.dto.mapper.SeatMapper;
@@ -20,14 +21,14 @@ import ru.kalinin.flight.repository.SeatRepository;
 import ru.kalinin.flight.service.interfaces.FlightService;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class FlightServiceImpl implements FlightService {
     private final FlightRepository flightRepository;
     private final FlightMapper flightMapper;
 
     @Override
-    public Page<FlightWithOutSeatsResponse> findAll(FlightPageRequest request) {
+    public PageResponse<FlightWithOutSeatsResponse> findAll(FlightPageRequest request) {
         Sort sort = Sort.by(Sort.Direction.fromString(request.getSortDirection()),
                 request.getSortBy());
 

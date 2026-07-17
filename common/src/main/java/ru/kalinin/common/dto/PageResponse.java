@@ -1,17 +1,4 @@
-package ru.kalinin.flight.dto.response;
-
-/*{
-        "content": [
-        {
-        "flightNumber": "17A",
-        "departureCity": "MOSKOW"
-        }
-        ],
-        "page": 1,
-        "size": 10,
-        "totalPages": 5,
-        "totalElements": 42
-        }*/
+package ru.kalinin.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

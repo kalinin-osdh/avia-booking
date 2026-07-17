@@ -26,6 +26,7 @@ public class Seat {
     private String seatNumber;
 
     @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     @Builder.Default
     private SeatStatus status = SeatStatus.AVAILABLE;
 

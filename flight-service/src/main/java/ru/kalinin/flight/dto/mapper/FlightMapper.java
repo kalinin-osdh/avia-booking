@@ -3,6 +3,7 @@ package ru.kalinin.flight.dto.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
+import ru.kalinin.common.dto.PageResponse;
 import ru.kalinin.flight.dto.request.FlightRequest;
 import ru.kalinin.flight.dto.response.FlightAdminResponse;
 import ru.kalinin.flight.dto.response.FlightWithOutSeatsResponse;
@@ -22,16 +23,30 @@ public class FlightMapper {
                 .departureTime(request.getDepartureTime())
                 .arrivalTime(request.getArrivalTime())
                 .totalSeats(request.getTotalSeats())
-                .availableSeats(request.getTotalSeats())
+                .availableSeats(0)
                 .build();
     }
 
-    public Page<FlightAdminResponse> toAdminPageResponse(Page<Flight> page) {
-        return page.map(this::toFlightAdminResponse);
+    public PageResponse<FlightAdminResponse> toAdminPageResponse(Page<Flight> page) {
+        Page<FlightAdminResponse> mappedPage = page.map(this::toFlightAdminResponse);
+        PageResponse<FlightAdminResponse> responsePage = new PageResponse<>();
+        responsePage.setContent(mappedPage.getContent());
+        responsePage.setPage(mappedPage.getNumber());
+        responsePage.setSize(mappedPage.getSize());
+        responsePage.setTotalPages(mappedPage.getTotalPages());
+        responsePage.setTotalElements(mappedPage.getTotalElements());
+        return responsePage;
     }
 
-    public Page<FlightWithOutSeatsResponse> toPageResponse(Page<Flight> page) {
-        return page.map(this::toFlightWithOutSeatsResponse);
+    public PageResponse<FlightWithOutSeatsResponse> toPageResponse(Page<Flight> page) {
+        Page<FlightWithOutSeatsResponse> mappedPage = page.map(this::toFlightWithOutSeatsResponse);
+        PageResponse<FlightWithOutSeatsResponse> responsePage = new PageResponse<>();
+        responsePage.setContent(mappedPage.getContent());
+        responsePage.setPage(mappedPage.getNumber());
+        responsePage.setSize(mappedPage.getSize());
+        responsePage.setTotalPages(mappedPage.getTotalPages());
+        responsePage.setTotalElements(mappedPage.getTotalElements());
+        return responsePage;
     }
 
     public FlightAdminResponse toFlightAdminResponse(Flight flight) {
@@ -44,6 +59,7 @@ public class FlightMapper {
                 .arrivalTime(flight.getArrivalTime())
                 .totalSeats(flight.getTotalSeats())
                 .availableSeats(flight.getAvailableSeats())
+                .seats(seatMapper.toSeatResponse(flight.getSeats()))
                 .build();
     }
 
