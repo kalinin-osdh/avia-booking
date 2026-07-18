@@ -34,8 +34,4 @@ public class User {
     @Column(nullable = false)
     @Builder.Default
     private Role role = Role.USER;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<RefreshToken> refreshTokens = new ArrayList<>();
 }
