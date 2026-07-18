@@ -1,11 +1,13 @@
 package ru.kalinin.auth.service.interfaces;
 
-import ru.kalinin.auth.entity.User;
-
 public interface RefreshTokenService {
-    String generateRefreshToken(User user);
+    String generateRefreshToken(Long userId);
 
-    void rotateRefreshToken(User user);
+    void saveRefreshToken(Long userId, String token);
 
-    boolean isRefreshTokenValid(String token);
+    void deleteRefreshToken(Long userId);
+
+    void rotateRefreshToken(Long userId, String token);
+
+    Long isRefreshTokenValid(String token);
 }
