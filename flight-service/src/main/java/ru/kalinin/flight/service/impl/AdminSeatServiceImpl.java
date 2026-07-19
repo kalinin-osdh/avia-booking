@@ -1,6 +1,7 @@
 package ru.kalinin.flight.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kalinin.common.exception.seats.SeatNotFoundException;
@@ -10,6 +11,7 @@ import ru.kalinin.flight.dto.response.SeatAdminResponse;
 import ru.kalinin.flight.entity.Flight;
 import ru.kalinin.flight.entity.Seat;
 import ru.kalinin.flight.repository.SeatRepository;
+import ru.kalinin.flight.service.FlightCacheService;
 import ru.kalinin.flight.service.interfaces.AdminFlightService;
 import ru.kalinin.flight.service.interfaces.AdminSeatService;
 
@@ -22,6 +24,7 @@ public class AdminSeatServiceImpl implements AdminSeatService {
     private final SeatRepository seatRepository;
     private final AdminFlightService adminFlightService;
     private final SeatMapper seatMapper;
+    private final FlightCacheService cacheService;
 
     @Override
     public List<SeatAdminResponse> findByFlightId(Long id) {
@@ -33,6 +36,7 @@ public class AdminSeatServiceImpl implements AdminSeatService {
     }
 
     @Override
+    @CacheEvict(value = "flightPage", allEntries = true)
     public SeatAdminResponse create(SeatRequest request) {
         Flight flight = adminFlightService.getById(request.getFlightId());
         Seat seat = seatMapper.toEntity(request);
@@ -42,12 +46,16 @@ public class AdminSeatServiceImpl implements AdminSeatService {
             throw new IllegalStateException("someException");
         Seat savedSeat = seatRepository.save(seat);
 
+        cacheService.evictFlight(seat.getFlight().getFlightNumber());
+
         return seatMapper.toSeatAdminResponse(savedSeat);
     }
 
     @Override
+    @CacheEvict(value = "flightPage", allEntries = true)
     public SeatAdminResponse update(Long id, SeatRequest request) {
-        Seat seat = getById(id);
+        Seat seat = getByIdWithFlight(id);
+        String oldFlightNumber = seat.getFlight().getFlightNumber();
         Flight flight = adminFlightService.getById(request.getFlightId());
 
         seat.setFlight(flight);
@@ -57,22 +65,33 @@ public class AdminSeatServiceImpl implements AdminSeatService {
 
         Seat savedSeat = seatRepository.save(seat);
 
+        cacheService.evictFlights(oldFlightNumber, flight.getFlightNumber());
+
         return seatMapper.toSeatAdminResponse(savedSeat);
     }
 
     @Override
+    @CacheEvict(value = "flightPage", allEntries = true)
     public void delete(Long id) {
-        Seat seat = getById(id);
+        Seat seat = getByIdWithFlight(id);
         int result = adminFlightService.changeAvailableSeats(seat.getFlight().getId(), -1);
         if (result==0)
             throw new IllegalStateException("someException");
         seatRepository.delete(seat);
+
+        cacheService.evictFlight(seat.getFlight().getFlightNumber());
     }
 
     @Override
     @Transactional(readOnly = true)
     public Seat getById(Long id) {
         return seatRepository.findById(id).orElseThrow(
+                ()-> new SeatNotFoundException(id)
+        );
+    }
+
+    private Seat getByIdWithFlight(Long id) {
+        return seatRepository.findByIdWithFlight(id).orElseThrow(
                 ()-> new SeatNotFoundException(id)
         );
     }

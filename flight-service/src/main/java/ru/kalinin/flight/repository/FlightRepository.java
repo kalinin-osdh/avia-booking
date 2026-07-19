@@ -39,7 +39,7 @@ public interface FlightRepository extends JpaRepository<Flight, Long> {
             @Param("status") SeatStatus status
     );
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("""
             UPDATE Flight f
             SET f.availableSeats = f.availableSeats + :delta

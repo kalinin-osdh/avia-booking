@@ -1,6 +1,7 @@
 package ru.kalinin.flight.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import ru.kalinin.flight.dto.request.FlightUpdateRequest;
 import ru.kalinin.flight.dto.response.FlightAdminResponse;
 import ru.kalinin.flight.entity.Flight;
 import ru.kalinin.flight.repository.FlightRepository;
+import ru.kalinin.flight.service.FlightCacheService;
 import ru.kalinin.flight.service.interfaces.AdminFlightService;
 
 @Service
@@ -25,6 +27,8 @@ import ru.kalinin.flight.service.interfaces.AdminFlightService;
 public class AdminFlightServiceImpl implements AdminFlightService {
     private final FlightRepository flightRepository;
     private final FlightMapper flightMapper;
+
+    private final FlightCacheService cacheService;
 
     @Override
     @Transactional(readOnly = true)
@@ -47,6 +51,7 @@ public class AdminFlightServiceImpl implements AdminFlightService {
     }
 
     @Override
+    @CacheEvict(value = "flightPage", allEntries = true)
     public FlightAdminResponse create(FlightRequest request) {
         if (flightRepository.existsFlightByFlightNumber(request.getFlightNumber()))
             throw new FlightExistsException(request.getFlightNumber());
@@ -59,6 +64,7 @@ public class AdminFlightServiceImpl implements AdminFlightService {
     }
 
     @Override
+    @CacheEvict(value = "flightPage", allEntries = true)
     public FlightAdminResponse update(Long id, FlightUpdateRequest request) {
         Flight flight = getById(id);
 
@@ -69,14 +75,19 @@ public class AdminFlightServiceImpl implements AdminFlightService {
 
         Flight savedFlight = flightRepository.save(flight);
 
+        cacheService.evictFlight(savedFlight.getFlightNumber());
+
         return flightMapper.toFlightAdminResponse(savedFlight);
     }
 
     @Override
+    @CacheEvict(value = "flightPage", allEntries = true)
     public void delete(Long id) {
         Flight flight = getById(id);
 
         flightRepository.delete(flight);
+
+        cacheService.evictFlight(flight.getFlightNumber());
     }
 
     @Override

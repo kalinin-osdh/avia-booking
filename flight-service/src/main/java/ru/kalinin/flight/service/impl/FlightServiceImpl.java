@@ -1,6 +1,7 @@
 package ru.kalinin.flight.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,16 @@ public class FlightServiceImpl implements FlightService {
     private final FlightMapper flightMapper;
 
     @Override
+    @Cacheable(
+            value = "flightPage",
+            key = "T(String).format('%d:%d:%s:%s:%s:%s', " +
+                    "#request.page, " +
+                    "#request.size, " +
+                    "#request.sortBy, " +
+                    "#request.sortDirection, " +
+                    "#request.departureCity == null ? '' : #request.departureCity, " +
+                    "#request.arrivalCity == null ? '' : #request.arrivalCity)"
+    )
     public PageResponse<FlightWithOutSeatsResponse> findAll(FlightPageRequest request) {
         Sort sort = Sort.by(Sort.Direction.fromString(request.getSortDirection()),
                 request.getSortBy());
@@ -47,9 +58,15 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
+    @Cacheable(
+            value = "flightByNumber",
+            key = "T(String).format('%s:%s', " +
+                    "#flightNumber, " +
+                    "#status == null ? '' : #status.name())"
+    )
     public FlightWithSeatsResponse findByFlightNumber(String flightNumber, SeatStatus status) {
 
-        Flight flight = flightRepository.findByFlightNumberWithSeats(flightNumber,status).orElseThrow(
+        Flight flight = flightRepository.findByFlightNumberWithSeats(flightNumber, status).orElseThrow(
                 ()-> new FlightNotFoundException(flightNumber)
         );
 
