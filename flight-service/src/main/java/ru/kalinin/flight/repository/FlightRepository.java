@@ -32,11 +32,9 @@ public interface FlightRepository extends JpaRepository<Flight, Long> {
             FROM Flight f
             LEFT JOIN FETCH f.seats s
             WHERE f.flightNumber = :flightNumber
-              AND (:status IS NULL OR s.status = :status)
             """)
-    Optional<Flight> findByFlightNumberWithSeats(
-            @Param("flightNumber") String flightNumber,
-            @Param("status") SeatStatus status
+    Optional<Flight> findByFlightNumber(
+            @Param("flightNumber") String flightNumber
     );
 
     @Modifying(clearAutomatically = true)

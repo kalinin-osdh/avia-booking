@@ -65,10 +65,15 @@ public class FlightServiceImpl implements FlightService {
                     "#status == null ? '' : #status.name())"
     )
     public FlightWithSeatsResponse findByFlightNumber(String flightNumber, SeatStatus status) {
-
-        Flight flight = flightRepository.findByFlightNumberWithSeats(flightNumber, status).orElseThrow(
-                ()-> new FlightNotFoundException(flightNumber)
+        Flight flight = flightRepository.findByFlightNumber(flightNumber).orElseThrow(
+                () -> new FlightNotFoundException(flightNumber)
         );
+
+        if(status!=null){
+            flight.setSeats(
+                    flight.getSeats().stream().filter(seat -> seat.getStatus()==status).toList()
+            );
+        }
 
         return flightMapper.toFlightWithSeatsResponse(flight);
     }

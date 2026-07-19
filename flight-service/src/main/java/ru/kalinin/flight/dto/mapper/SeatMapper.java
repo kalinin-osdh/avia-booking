@@ -45,6 +45,9 @@ public class SeatMapper {
     }
 
     public List<SeatResponse> toSeatResponse(List<Seat> seats) {
+        if(seats.isEmpty()){
+            return new ArrayList<>();
+        }
         return seats.stream().map(this::toSeatResponse).collect(Collectors.toList());
 
     }
