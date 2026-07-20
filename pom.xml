@@ -21,6 +21,7 @@
         <module>auth-service</module>
         <module>common</module>
         <module>flight-service</module>
+        <module>booking-service</module>
     </modules>
 
     <properties>
@@ -32,6 +33,7 @@
         <spring-cloud.version>2025.1.0</spring-cloud.version>
         <jjwt.version>0.12.5</jjwt.version>
         <telegram-bots.version>6.9.7.1</telegram-bots.version>
+        <spring-kafka.version>3.2.5</spring-kafka.version>
     </properties>
 
     <dependencyManagement>
@@ -42,6 +44,12 @@
                 <version>${spring-cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.kafka</groupId>
+                <artifactId>spring-kafka</artifactId>
+                <version>${spring-kafka.version}</version>
             </dependency>
 
             <dependency>

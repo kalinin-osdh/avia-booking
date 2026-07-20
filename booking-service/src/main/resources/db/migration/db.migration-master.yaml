@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: db/migration/v1/01-create-booking-log-table.sql
+      relativeToChangelogFile: false

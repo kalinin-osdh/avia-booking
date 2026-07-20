@@ -1,0 +1,15 @@
+package ru.kalinin.booking;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication
+@ComponentScan(basePackages = {
+        "ru.kalinin"
+})
+public class BookingServiceApplication {
+    public static void main(String[] args){
+        SpringApplication.run(BookingServiceApplication.class, args);
+    }
+}
