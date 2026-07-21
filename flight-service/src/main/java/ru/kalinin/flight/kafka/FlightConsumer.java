@@ -9,7 +9,7 @@ import ru.kalinin.common.exception.seats.SeatNotFoundException;
 import ru.kalinin.common.kafka.event.EventMetaData;
 import ru.kalinin.common.kafka.event.booking.BookingCreatedEvent;
 import ru.kalinin.common.kafka.event.seat.SeatReservedEvent;
-import ru.kalinin.common.kafka.event.seat.SeatReservedFailedEvent;
+import ru.kalinin.common.kafka.event.seat.SeatReservationFailedEvent;
 import ru.kalinin.common.kafka.topics.KafkaTopics;
 import ru.kalinin.flight.service.interfaces.FlightService;
 
@@ -42,7 +42,7 @@ public class FlightConsumer {
 
             flightProducer.sendSeatReserved(sendEvent);
         } catch (SeatAlreadyReservedException | FlightNotFoundException | SeatNotFoundException ex) {
-            SeatReservedFailedEvent sendEvent = new SeatReservedFailedEvent(
+            SeatReservationFailedEvent sendEvent = new SeatReservationFailedEvent(
                     new EventMetaData(
                             UUID.randomUUID(),
                             LocalDateTime.now()

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.kalinin.common.kafka.event.seat.SeatReservedEvent;
-import ru.kalinin.common.kafka.event.seat.SeatReservedFailedEvent;
+import ru.kalinin.common.kafka.event.seat.SeatReservationFailedEvent;
 import ru.kalinin.common.kafka.topics.KafkaTopics;
 
 @Service
@@ -19,7 +19,7 @@ public class FlightProducer {
         );
     }
 
-    public void sendSeatReservationFailed(SeatReservedFailedEvent event) {
+    public void sendSeatReservationFailed(SeatReservationFailedEvent event) {
         kafkaTemplate.send(
                 KafkaTopics.SEAT_RESERVATION_FAILED,
                 event
