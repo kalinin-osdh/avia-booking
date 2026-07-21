@@ -10,15 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kalinin.common.dto.PageResponse;
 import ru.kalinin.common.exception.flights.FlightNotFoundException;
+import ru.kalinin.common.exception.seats.SeatAlreadyReservedException;
+import ru.kalinin.common.exception.seats.SeatNotFoundException;
 import ru.kalinin.flight.dto.mapper.FlightMapper;
-import ru.kalinin.flight.dto.mapper.SeatMapper;
 import ru.kalinin.flight.dto.request.FlightPageRequest;
 import ru.kalinin.flight.dto.response.FlightWithOutSeatsResponse;
 import ru.kalinin.flight.dto.response.FlightWithSeatsResponse;
 import ru.kalinin.flight.entity.Flight;
+import ru.kalinin.flight.entity.Seat;
 import ru.kalinin.flight.entity.enums.SeatStatus;
 import ru.kalinin.flight.repository.FlightRepository;
-import ru.kalinin.flight.repository.SeatRepository;
 import ru.kalinin.flight.service.interfaces.FlightService;
 
 @Service
@@ -76,5 +77,25 @@ public class FlightServiceImpl implements FlightService {
         }
 
         return flightMapper.toFlightWithSeatsResponse(flight);
+    }
+
+    @Override
+    @Transactional
+    public void reserveSeat(String flightNumber, String seatNumber) {
+        Flight flight = flightRepository.findByFlightNumber(flightNumber).orElseThrow(
+                () -> new FlightNotFoundException(flightNumber)
+        );
+
+        Seat seat = flight.getSeats().stream()
+                .filter(s -> s.getSeatNumber().equals(seatNumber))
+                .findFirst()
+                .orElseThrow(
+                        ()-> new SeatNotFoundException(seatNumber)
+                );
+
+        if (seat.getStatus() != SeatStatus.AVAILABLE)
+            throw new SeatAlreadyReservedException(seatNumber);
+
+        seat.setStatus(SeatStatus.RESERVED);
     }
 }

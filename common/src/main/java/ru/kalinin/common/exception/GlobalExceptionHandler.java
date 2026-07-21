@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.kalinin.common.dto.ErrorResponse;
 import ru.kalinin.common.exception.flights.FlightExistsException;
 import ru.kalinin.common.exception.refresh_token.RefreshTokenNotValid;
+import ru.kalinin.common.exception.seats.SeatAlreadyReservedException;
 import ru.kalinin.common.exception.user.UserExistsException;
 
 import java.util.stream.Collectors;
@@ -69,6 +70,12 @@ public class GlobalExceptionHandler {
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.joining("; "));
         return new ErrorResponse("Ошибка валидации", message);
+    }
+
+    @ExceptionHandler(SeatAlreadyReservedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleException(SeatAlreadyReservedException ex){
+        return new ErrorResponse("Ошибка бронирования", ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

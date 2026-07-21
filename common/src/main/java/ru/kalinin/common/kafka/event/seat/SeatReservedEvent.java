@@ -1,13 +1,12 @@
-package ru.kalinin.common.kafka.event.booking;
+package ru.kalinin.common.kafka.event.seat;
 
 import ru.kalinin.common.kafka.event.EventMetaData;
 
-public record BookingCreatedEvent(
+public record SeatReservedEvent(
         EventMetaData metaData,
         Long bookingId,
         String username,
         String flightNumber,
         String seatNumber
 ) {
-
 }

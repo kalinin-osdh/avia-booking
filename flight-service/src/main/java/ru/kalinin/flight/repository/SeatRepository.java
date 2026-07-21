@@ -19,4 +19,6 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
             WHERE s.id = :id
             """)
     Optional<Seat> findByIdWithFlight(@Param("id") Long id);
+
+    Seat findSeatBySeatNumber(String seatNumber);
 }
