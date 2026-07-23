@@ -6,6 +6,7 @@ import ru.kalinin.booking.entity.enums.BookingStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "bookings")
@@ -18,6 +19,10 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "booking_number", unique = true)
+    @Builder.Default
+    private UUID bookingNumber = UUID.randomUUID();
 
     @Column(name = "username", nullable = false)
     private String username;

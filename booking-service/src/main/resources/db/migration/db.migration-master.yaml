@@ -6,3 +6,6 @@ databaseChangeLog:
   - include:
       file: db/migration/v1/02-update-booking-log-table.sql
       relativeToChangelogFile: false
+  - include:
+      file: db/migration/v1/03-add-UUID-booking-table.sql
+      relativeToChangelogFile: false

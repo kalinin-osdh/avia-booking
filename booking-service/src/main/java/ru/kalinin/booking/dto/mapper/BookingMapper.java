@@ -11,8 +11,9 @@ import java.util.stream.Collectors;
 @Component
 public class BookingMapper {
 
-    public Booking toEntity(BookingRequest request){
+    public Booking toEntity(BookingRequest request, String username){
         return Booking.builder()
+                .username(username)
                 .flightNumber(request.getFlightNumber())
                 .seatNumber(request.getSeatNumber())
                 .build();
@@ -20,6 +21,7 @@ public class BookingMapper {
 
     public BookingResponse toResponse(Booking booking){
         return BookingResponse.builder()
+                .bookingNumber(booking.getBookingNumber())
                 .username(booking.getUsername())
                 .flightNumber(booking.getFlightNumber())
                 .seatNumber(booking.getSeatNumber())

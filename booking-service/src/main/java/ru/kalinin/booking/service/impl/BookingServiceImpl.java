@@ -30,13 +30,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponse booking(String username, BookingRequest request) {
-        Booking booking = Booking.builder()
-                .username(username)
-                .flightNumber(request.getFlightNumber())
-                .seatNumber(request.getSeatNumber())
-                .build();
-
-        Booking saved = bookingRepository.save(booking);
+        Booking saved = bookingRepository.save(bookingMapper.toEntity(request, username));
 
         BookingCreatedEvent event = new BookingCreatedEvent(
                 new EventMetaData(
@@ -51,7 +45,7 @@ public class BookingServiceImpl implements BookingService {
 
         bookingProducer.sendBookingCreated(event);
 
-        return bookingMapper.toResponse(booking);
+        return bookingMapper.toResponse(saved);
     }
 
     @Override
