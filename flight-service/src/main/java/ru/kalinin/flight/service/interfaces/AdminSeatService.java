@@ -1,5 +1,6 @@
 package ru.kalinin.flight.service.interfaces;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.kalinin.flight.dto.request.SeatRequest;
 import ru.kalinin.flight.dto.response.SeatAdminResponse;
 import ru.kalinin.flight.entity.Seat;
@@ -12,4 +13,5 @@ public interface AdminSeatService {
     SeatAdminResponse update(Long id, SeatRequest request);
     void delete(Long id);
     Seat getById(Long id);
+    Seat getByIdWithFlight(Long id);
 }

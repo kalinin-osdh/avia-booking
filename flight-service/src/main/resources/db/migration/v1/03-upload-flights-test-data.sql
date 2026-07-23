@@ -1,0 +1,31 @@
+INSERT INTO flights(flight_number,
+                    departure_city,
+                    arrival_city,
+                    departure_time,
+                    arrival_time)
+VALUES ('',
+        '',
+        '',
+        '',
+        ''),
+       ('',
+        '',
+        '',
+        '',
+        ''),
+       ('',
+        '',
+        '',
+        '',
+        '');
+
+INSERT INTO seats(flight_id, seat_number, price)
+VALUES (1,
+        '',
+        12.00),
+       (1,
+        '',
+        12.00),
+       (1,
+        '',
+        12.00)

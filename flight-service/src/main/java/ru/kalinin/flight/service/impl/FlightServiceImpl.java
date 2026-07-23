@@ -1,6 +1,7 @@
 package ru.kalinin.flight.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,10 +17,12 @@ import ru.kalinin.flight.dto.mapper.FlightMapper;
 import ru.kalinin.flight.dto.request.FlightPageRequest;
 import ru.kalinin.flight.dto.response.FlightWithOutSeatsResponse;
 import ru.kalinin.flight.dto.response.FlightWithSeatsResponse;
+import ru.kalinin.flight.dto.response.SeatCountsResponse;
 import ru.kalinin.flight.entity.Flight;
 import ru.kalinin.flight.entity.Seat;
 import ru.kalinin.flight.entity.enums.SeatStatus;
 import ru.kalinin.flight.repository.FlightRepository;
+import ru.kalinin.flight.service.FlightCacheService;
 import ru.kalinin.flight.service.interfaces.FlightService;
 
 @Service
@@ -28,6 +31,7 @@ import ru.kalinin.flight.service.interfaces.FlightService;
 public class FlightServiceImpl implements FlightService {
     private final FlightRepository flightRepository;
     private final FlightMapper flightMapper;
+    private final FlightCacheService cacheService;
 
     @Override
     @Cacheable(
@@ -70,17 +74,21 @@ public class FlightServiceImpl implements FlightService {
                 () -> new FlightNotFoundException(flightNumber)
         );
 
-        if(status!=null){
+        if (status != null) {
             flight.setSeats(
-                    flight.getSeats().stream().filter(seat -> seat.getStatus()==status).toList()
+                    flight.getSeats().stream().filter(seat -> seat.getStatus() == status).toList()
             );
         }
 
-        return flightMapper.toFlightWithSeatsResponse(flight);
+        SeatCountsResponse counts = flightRepository.findCountSeats(flight.getId());
+
+        return flightMapper.toFlightWithSeatsResponse(flight, counts);
     }
+
 
     @Override
     @Transactional
+    @CacheEvict(value = "flightPage", allEntries = true)
     public void reserveSeat(String flightNumber, String seatNumber) {
         Flight flight = flightRepository.findByFlightNumber(flightNumber).orElseThrow(
                 () -> new FlightNotFoundException(flightNumber)
@@ -90,12 +98,14 @@ public class FlightServiceImpl implements FlightService {
                 .filter(s -> s.getSeatNumber().equals(seatNumber))
                 .findFirst()
                 .orElseThrow(
-                        ()-> new SeatNotFoundException(seatNumber)
+                        () -> new SeatNotFoundException(seatNumber)
                 );
 
         if (seat.getStatus() != SeatStatus.AVAILABLE)
             throw new SeatAlreadyReservedException(seatNumber);
 
         seat.setStatus(SeatStatus.RESERVED);
+
+        cacheService.evictFlight(flight.getFlightNumber());
     }
 }

@@ -3,11 +3,10 @@ package ru.kalinin.flight.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import ru.kalinin.flight.dto.response.SeatCountsResponse;
 import ru.kalinin.flight.entity.Flight;
-import ru.kalinin.flight.entity.enums.SeatStatus;
 
 import java.util.Optional;
 
@@ -37,16 +36,15 @@ public interface FlightRepository extends JpaRepository<Flight, Long> {
             @Param("flightNumber") String flightNumber
     );
 
-    @Modifying(clearAutomatically = true)
     @Query("""
-            UPDATE Flight f
-            SET f.availableSeats = f.availableSeats + :delta
+            SELECT
+                COUNT(s.id) as totalSeats,
+                SUM(CASE WHEN s.status = 'AVAILABLE' THEN 1 ELSE 0 END) as availableSeats
+            FROM Flight f
+            LEFT JOIN f.seats s
             WHERE f.id = :id
-                AND f.availableSeats + :delta >= 0
-                AND f.availableSeats + :delta <= f.totalSeats
+            GROUP BY f.id
             """)
-    int updateAvailableSeats(
-            @Param("id") Long id,
-            @Param("delta") Integer delta
-            );
+    SeatCountsResponse findCountSeats(@Param("id") Long id);
+
 }

@@ -40,8 +40,4 @@ public class FlightRequest {
     @Future(message = "Дата прибытия должна быть в будущем")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime arrivalTime;
-
-    @NotNull(message = "Введите кол-во мест")
-    @Positive(message = "Кол-во мест должно быть позитивным числом")
-    private Integer totalSeats;
 }

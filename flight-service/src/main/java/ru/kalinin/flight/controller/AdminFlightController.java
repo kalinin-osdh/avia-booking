@@ -10,6 +10,7 @@ import ru.kalinin.flight.dto.request.FlightPageRequest;
 import ru.kalinin.flight.dto.request.FlightRequest;
 import ru.kalinin.flight.dto.request.FlightUpdateRequest;
 import ru.kalinin.flight.dto.response.FlightAdminResponse;
+import ru.kalinin.flight.dto.response.FlightAdminPageResponse;
 import ru.kalinin.flight.service.interfaces.AdminFlightService;
 
 @RestController
@@ -19,7 +20,7 @@ public class AdminFlightController {
     private final AdminFlightService adminFlightService;
 
     @GetMapping
-    public ResponseEntity<PageResponse<FlightAdminResponse>> findAllFlights(
+    public ResponseEntity<PageResponse<FlightAdminPageResponse>> findAllFlights(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "id") String sortBy,

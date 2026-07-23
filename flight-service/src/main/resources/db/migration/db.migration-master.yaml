@@ -6,3 +6,7 @@ databaseChangeLog:
   - include:
       file: db/migration/v1/02-create-seat-table.sql
       relativeToChangelogFile: false
+
+  - include:
+    file: db/migration/v2/01-delete-total-and-available-seats-from-flights-table.sql
+    relativeToChangelogFile: false

@@ -17,7 +17,7 @@ public class FlightWithSeatsResponse {
     private LocalDateTime departureTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime arrivalTime;
-    private Integer totalSeats;
-    private Integer availableSeats;
+    private Long totalSeats;
+    private Long availableSeats;
     private List<SeatResponse> seats;
 }

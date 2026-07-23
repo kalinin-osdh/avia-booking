@@ -41,9 +41,6 @@ public class AdminSeatServiceImpl implements AdminSeatService {
         Flight flight = adminFlightService.getById(request.getFlightId());
         Seat seat = seatMapper.toEntity(request);
         seat.setFlight(flight);
-        int result = adminFlightService.changeAvailableSeats(flight.getId(), 1);
-        if (result==0)
-            throw new IllegalStateException("someException");
         Seat savedSeat = seatRepository.save(seat);
 
         cacheService.evictFlight(seat.getFlight().getFlightNumber());
@@ -74,9 +71,7 @@ public class AdminSeatServiceImpl implements AdminSeatService {
     @CacheEvict(value = "flightPage", allEntries = true)
     public void delete(Long id) {
         Seat seat = getByIdWithFlight(id);
-        int result = adminFlightService.changeAvailableSeats(seat.getFlight().getId(), -1);
-        if (result==0)
-            throw new IllegalStateException("someException");
+
         seatRepository.delete(seat);
 
         cacheService.evictFlight(seat.getFlight().getFlightNumber());
@@ -90,7 +85,9 @@ public class AdminSeatServiceImpl implements AdminSeatService {
         );
     }
 
-    private Seat getByIdWithFlight(Long id) {
+    @Override
+    @Transactional(readOnly = true)
+    public Seat getByIdWithFlight(Long id) {
         return seatRepository.findByIdWithFlight(id).orElseThrow(
                 ()-> new SeatNotFoundException(id)
         );

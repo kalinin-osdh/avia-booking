@@ -37,12 +37,6 @@ public class Flight {
     @Column(name = "arrival_time", nullable = false)
     private LocalDateTime arrivalTime;
 
-    @Column(name = "total_seats",nullable = false)
-    private Integer totalSeats;
-
-    @Column(name = "available_seats",nullable = false)
-    private Integer availableSeats;
-
     @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Seat> seats = new ArrayList<>();

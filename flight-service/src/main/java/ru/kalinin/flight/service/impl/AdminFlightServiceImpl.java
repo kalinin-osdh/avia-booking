@@ -16,6 +16,8 @@ import ru.kalinin.flight.dto.request.FlightPageRequest;
 import ru.kalinin.flight.dto.request.FlightRequest;
 import ru.kalinin.flight.dto.request.FlightUpdateRequest;
 import ru.kalinin.flight.dto.response.FlightAdminResponse;
+import ru.kalinin.flight.dto.response.FlightAdminPageResponse;
+import ru.kalinin.flight.dto.response.SeatCountsResponse;
 import ru.kalinin.flight.entity.Flight;
 import ru.kalinin.flight.repository.FlightRepository;
 import ru.kalinin.flight.service.FlightCacheService;
@@ -32,7 +34,7 @@ public class AdminFlightServiceImpl implements AdminFlightService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<FlightAdminResponse> findAll(FlightPageRequest request) {
+    public PageResponse<FlightAdminPageResponse> findAll(FlightPageRequest request) {
         Sort sort = Sort.by(Sort.Direction.fromString(request.getSortDirection()),
                 request.getSortBy());
 
@@ -60,7 +62,9 @@ public class AdminFlightServiceImpl implements AdminFlightService {
 
         Flight savedFlight = flightRepository.save(flight);
 
-        return flightMapper.toFlightAdminResponse(savedFlight);
+        SeatCountsResponse counts = flightRepository.findCountSeats(savedFlight.getId());
+
+        return flightMapper.toFlightAdminResponse(savedFlight, counts);
     }
 
     @Override
@@ -77,7 +81,10 @@ public class AdminFlightServiceImpl implements AdminFlightService {
 
         cacheService.evictFlight(savedFlight.getFlightNumber());
 
-        return flightMapper.toFlightAdminResponse(savedFlight);
+        SeatCountsResponse counts = flightRepository.findCountSeats(savedFlight.getId());
+
+
+        return flightMapper.toFlightAdminResponse(savedFlight, counts);
     }
 
     @Override
@@ -94,7 +101,8 @@ public class AdminFlightServiceImpl implements AdminFlightService {
     @Transactional(readOnly = true)
     public FlightAdminResponse findById(Long id) {
         Flight flight = getById(id);
-        return flightMapper.toFlightAdminResponse(flight);
+        SeatCountsResponse counts = flightRepository.findCountSeats(flight.getId());
+        return flightMapper.toFlightAdminResponse(flight, counts);
     }
 
     @Override
@@ -105,8 +113,4 @@ public class AdminFlightServiceImpl implements AdminFlightService {
         );
     }
 
-    @Override
-    public int changeAvailableSeats(Long id, Integer delta) {
-        return flightRepository.updateAvailableSeats(id, delta);
-    }
 }
