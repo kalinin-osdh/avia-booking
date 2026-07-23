@@ -25,6 +25,7 @@ public class BookingMapper {
                 .seatNumber(booking.getSeatNumber())
                 .status(booking.getStatus())
                 .createdAt(booking.getCreatedAt())
+                .price(booking.getPrice())
                 .build();
     }
 

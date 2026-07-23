@@ -25,6 +25,8 @@ import ru.kalinin.flight.repository.FlightRepository;
 import ru.kalinin.flight.service.FlightCacheService;
 import ru.kalinin.flight.service.interfaces.FlightService;
 
+import java.math.BigDecimal;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -89,7 +91,7 @@ public class FlightServiceImpl implements FlightService {
     @Override
     @Transactional
     @CacheEvict(value = "flightPage", allEntries = true)
-    public void reserveSeat(String flightNumber, String seatNumber) {
+    public BigDecimal reserveSeat(String flightNumber, String seatNumber) {
         Flight flight = flightRepository.findByFlightNumber(flightNumber).orElseThrow(
                 () -> new FlightNotFoundException(flightNumber)
         );
@@ -107,5 +109,7 @@ public class FlightServiceImpl implements FlightService {
         seat.setStatus(SeatStatus.RESERVED);
 
         cacheService.evictFlight(flight.getFlightNumber());
+
+        return seat.getPrice();
     }
 }

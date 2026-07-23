@@ -33,6 +33,9 @@ public class Booking {
     @Builder.Default
     private BookingStatus status = BookingStatus.CREATED;
 
+    @Column(name = "price")
+    private BigDecimal price;
+
     @Column(name = "created_at", nullable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

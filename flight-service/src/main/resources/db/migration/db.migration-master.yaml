@@ -8,5 +8,9 @@ databaseChangeLog:
       relativeToChangelogFile: false
 
   - include:
-    file: db/migration/v2/01-delete-total-and-available-seats-from-flights-table.sql
-    relativeToChangelogFile: false
+      file: db/migration/v2/01-delete-total-and-available-seats-from-flights-table.sql
+      relativeToChangelogFile: false
+
+  - include:
+      file: db/migration/v2/02-upload-flights-test-data.sql
+      relativeToChangelogFile: false

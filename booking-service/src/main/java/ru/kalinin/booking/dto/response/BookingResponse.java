@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class BookingResponse {
-    private String bookingNumber;
     private String username;
     private String flightNumber;
     private String seatNumber;

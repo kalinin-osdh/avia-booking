@@ -17,6 +17,4 @@ public class FlightWithOutSeatsResponse {
     private LocalDateTime departureTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime arrivalTime;
-    private Long totalSeats;
-    private Long availableSeats;
 }

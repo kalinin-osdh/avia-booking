@@ -8,6 +8,8 @@ import ru.kalinin.common.kafka.event.seat.SeatReservationFailedEvent;
 import ru.kalinin.common.kafka.event.seat.SeatReservedEvent;
 import ru.kalinin.common.kafka.topics.KafkaTopics;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 public class BookingConsumer {
@@ -17,7 +19,7 @@ public class BookingConsumer {
             topics = KafkaTopics.SEAT_RESERVED
     )
     public void seatReservedListener(SeatReservedEvent event) {
-        bookingService.confirmBooking(event.bookingId());
+        bookingService.confirmBooking(event.bookingId(), event.price());
     }
 
     @KafkaListener(

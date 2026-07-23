@@ -13,6 +13,7 @@ import ru.kalinin.common.kafka.event.seat.SeatReservationFailedEvent;
 import ru.kalinin.common.kafka.topics.KafkaTopics;
 import ru.kalinin.flight.service.interfaces.FlightService;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ public class FlightConsumer {
     )
     public void reservationListener(BookingCreatedEvent event) {
         try {
-            flightService.reserveSeat(event.flightNumber(), event.seatNumber());
+            BigDecimal price = flightService.reserveSeat(event.flightNumber(), event.seatNumber());
 
             SeatReservedEvent sendEvent = new SeatReservedEvent(
                     new EventMetaData(
@@ -37,7 +38,8 @@ public class FlightConsumer {
                     event.bookingId(),
                     event.username(),
                     event.flightNumber(),
-                    event.seatNumber()
+                    event.seatNumber(),
+                    price
             );
 
             flightProducer.sendSeatReserved(sendEvent);

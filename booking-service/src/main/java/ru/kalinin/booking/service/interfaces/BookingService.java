@@ -6,6 +6,7 @@ import ru.kalinin.booking.dto.response.BookingResponse;
 import ru.kalinin.booking.entity.Booking;
 import ru.kalinin.booking.entity.enums.BookingStatus;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface BookingService {
@@ -13,7 +14,7 @@ public interface BookingService {
 
     List<BookingResponse> getUserHistory(String username);
 
-    void confirmBooking(Long id);
+    void confirmBooking(Long id, BigDecimal price);
 
     void declineBooking(Long id);
 
