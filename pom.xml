@@ -22,6 +22,7 @@
         <module>common</module>
         <module>flight-service</module>
         <module>booking-service</module>
+        <module>payment-service</module>
     </modules>
 
     <properties>

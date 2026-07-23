@@ -20,7 +20,7 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "booking_number", unique = true)
+    @Column(name = "booking_number", nullable = false, unique = true)
     @Builder.Default
     private UUID bookingNumber = UUID.randomUUID();
 
