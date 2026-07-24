@@ -8,6 +8,7 @@ import ru.kalinin.booking.entity.enums.BookingStatus;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 public interface BookingService {
     BookingResponse booking(String username, BookingRequest request);
@@ -18,5 +19,11 @@ public interface BookingService {
 
     void declineBooking(Long id);
 
+    void successPayment(UUID bookingNumber);
+
+    void failPayment(UUID bookingNumber);
+
     Booking getById(Long id);
+
+    Booking getByBookingNumber(UUID bookingNumber);
 }

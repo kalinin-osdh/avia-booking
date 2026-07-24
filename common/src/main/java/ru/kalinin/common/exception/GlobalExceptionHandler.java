@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.kalinin.common.dto.ErrorResponse;
 import ru.kalinin.common.exception.flights.FlightExistsException;
+import ru.kalinin.common.exception.payments.PaymentAlreadyExistsException;
 import ru.kalinin.common.exception.payments.PaymentUserNotEqualsException;
 import ru.kalinin.common.exception.refresh_token.RefreshTokenNotValid;
-import ru.kalinin.common.exception.seats.SeatAlreadyReservedException;
+import ru.kalinin.common.exception.seats.SeatAlreadyStatusException;
 import ru.kalinin.common.exception.users.UserExistsException;
 
 import java.util.stream.Collectors;
@@ -73,15 +74,21 @@ public class GlobalExceptionHandler {
         return new ErrorResponse("Ошибка валидации", message);
     }
 
-    @ExceptionHandler(SeatAlreadyReservedException.class)
+    @ExceptionHandler(SeatAlreadyStatusException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleException(SeatAlreadyReservedException ex){
+    public ErrorResponse handleException(SeatAlreadyStatusException ex){
         return new ErrorResponse("Ошибка бронирования", ex.getMessage());
     }
 
     @ExceptionHandler(PaymentUserNotEqualsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleException(PaymentUserNotEqualsException ex){
+        return new ErrorResponse("Ошибка оплаты", ex.getMessage());
+    }
+
+    @ExceptionHandler(PaymentAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleException(PaymentAlreadyExistsException ex){
         return new ErrorResponse("Ошибка оплаты", ex.getMessage());
     }
 

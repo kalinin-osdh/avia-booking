@@ -38,6 +38,7 @@ public class BookingServiceImpl implements BookingService {
                         LocalDateTime.now()
                 ),
                 saved.getId(),
+                saved.getBookingNumber(),
                 username,
                 saved.getFlightNumber(),
                 saved.getSeatNumber()
@@ -76,12 +77,41 @@ public class BookingServiceImpl implements BookingService {
         booking.setStatus(BookingStatus.DECLINED);
     }
 
+    @Override
+    public void successPayment(UUID bookingNumber){
+        Booking booking = getByBookingNumber(bookingNumber);
+
+        if (booking.getStatus() == BookingStatus.PAYMENT_SUCCESS)
+            return;
+
+        booking.setStatus(BookingStatus.PAYMENT_SUCCESS);
+    }
+
+    @Override
+    public void failPayment(UUID bookingNumber){
+        Booking booking = getByBookingNumber(bookingNumber);
+
+        if (booking.getStatus() == BookingStatus.PAYMENT_FAILED)
+            return;
+
+        booking.setStatus(BookingStatus.PAYMENT_FAILED);
+    }
+
 
     @Override
     @Transactional(readOnly = true)
     public Booking getById(Long id){
         return bookingRepository.findById(id).orElseThrow(
                 ()-> new BookingNotFoundException(id)
+        );
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public Booking getByBookingNumber(UUID bookingNumber){
+        return bookingRepository.findByBookingNumber(bookingNumber).orElseThrow(
+                ()-> new BookingNotFoundException(bookingNumber)
         );
     }
 }

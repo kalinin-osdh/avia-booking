@@ -4,13 +4,10 @@ import ru.kalinin.common.kafka.event.EventMetaData;
 
 import java.util.UUID;
 
-public record BookingCreatedEvent(
+public record BookingPaymentSuccessfulEvent(
         EventMetaData metaData,
-        Long bookingId,
         UUID bookingNumber,
-        String username,
         String flightNumber,
         String seatNumber
 ) {
-
 }

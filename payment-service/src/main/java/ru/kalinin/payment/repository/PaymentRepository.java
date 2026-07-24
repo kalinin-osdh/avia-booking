@@ -12,4 +12,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> getPaymentByBookingNumber(UUID bookingNumber);
 
     List<Payment> findPaymentsByUsername(String username);
+
+    boolean existsByBookingNumber(UUID bookingNumber);
 }

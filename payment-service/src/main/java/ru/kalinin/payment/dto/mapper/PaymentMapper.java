@@ -15,8 +15,8 @@ public class PaymentMapper {
     public Payment toEntity(String username, UUID bookingNumber, BigDecimal price) {
         return Payment.builder()
                 .bookingNumber(bookingNumber)
-                .username(username)
                 .price(price)
+                .username(username)
                 .build();
     }
 

@@ -12,4 +12,7 @@ public interface FlightService {
     PageResponse<FlightWithOutSeatsResponse> findAll(FlightPageRequest request);
     FlightWithSeatsResponse findByFlightNumber(String flightNumber, SeatStatus status);
     BigDecimal reserveSeat(String flightNumber, String seatNumber);
+    void soldSeat(String flightNumber, String seatNumber);
+    void availableSeat(String flightNumber, String seatNumber);
+
 }

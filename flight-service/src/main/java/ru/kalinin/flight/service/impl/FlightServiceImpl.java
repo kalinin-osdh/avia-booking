@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kalinin.common.dto.PageResponse;
 import ru.kalinin.common.exception.flights.FlightNotFoundException;
-import ru.kalinin.common.exception.seats.SeatAlreadyReservedException;
+import ru.kalinin.common.exception.seats.SeatAlreadyStatusException;
 import ru.kalinin.common.exception.seats.SeatNotFoundException;
 import ru.kalinin.flight.dto.mapper.FlightMapper;
 import ru.kalinin.flight.dto.request.FlightPageRequest;
@@ -104,12 +104,58 @@ public class FlightServiceImpl implements FlightService {
                 );
 
         if (seat.getStatus() != SeatStatus.AVAILABLE)
-            throw new SeatAlreadyReservedException(seatNumber);
+            throw new SeatAlreadyStatusException(seatNumber, SeatStatus.AVAILABLE.name());
 
         seat.setStatus(SeatStatus.RESERVED);
 
         cacheService.evictFlight(flight.getFlightNumber());
 
         return seat.getPrice();
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "flightPage", allEntries = true)
+    public void soldSeat(String flightNumber, String seatNumber) {
+        Flight flight = flightRepository.findByFlightNumber(flightNumber).orElseThrow(
+                () -> new FlightNotFoundException(flightNumber)
+        );
+
+        Seat seat = flight.getSeats().stream()
+                .filter(s -> s.getSeatNumber().equals(seatNumber))
+                .findFirst()
+                .orElseThrow(
+                        () -> new SeatNotFoundException(seatNumber)
+                );
+
+        if (seat.getStatus() != SeatStatus.RESERVED)
+            throw new SeatAlreadyStatusException(seatNumber, SeatStatus.RESERVED.name());
+
+        seat.setStatus(SeatStatus.SOLD);
+
+        cacheService.evictFlight(flight.getFlightNumber());
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "flightPage", allEntries = true)
+    public void availableSeat(String flightNumber, String seatNumber) {
+        Flight flight = flightRepository.findByFlightNumber(flightNumber).orElseThrow(
+                () -> new FlightNotFoundException(flightNumber)
+        );
+
+        Seat seat = flight.getSeats().stream()
+                .filter(s -> s.getSeatNumber().equals(seatNumber))
+                .findFirst()
+                .orElseThrow(
+                        () -> new SeatNotFoundException(seatNumber)
+                );
+
+        if (seat.getStatus() != SeatStatus.RESERVED)
+            throw new SeatAlreadyStatusException(seatNumber, SeatStatus.RESERVED.name());
+
+        seat.setStatus(SeatStatus.AVAILABLE);
+
+        cacheService.evictFlight(flight.getFlightNumber());
     }
 }

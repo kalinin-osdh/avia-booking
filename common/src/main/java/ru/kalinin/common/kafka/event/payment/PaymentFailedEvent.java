@@ -1,17 +1,16 @@
-package ru.kalinin.common.kafka.event.seat;
+package ru.kalinin.common.kafka.event.payment;
 
 import ru.kalinin.common.kafka.event.EventMetaData;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record SeatReservedEvent(
+public record PaymentFailedEvent(
         EventMetaData metaData,
-        Long bookingId,
         UUID bookingNumber,
+        UUID paymentNumber,
         String username,
-        String flightNumber,
-        String seatNumber,
-        BigDecimal price
+        BigDecimal price,
+        String reason
 ) {
 }

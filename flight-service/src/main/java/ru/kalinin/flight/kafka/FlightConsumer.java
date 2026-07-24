@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import ru.kalinin.common.exception.flights.FlightNotFoundException;
-import ru.kalinin.common.exception.seats.SeatAlreadyReservedException;
+import ru.kalinin.common.exception.seats.SeatAlreadyStatusException;
 import ru.kalinin.common.exception.seats.SeatNotFoundException;
 import ru.kalinin.common.kafka.event.EventMetaData;
 import ru.kalinin.common.kafka.event.booking.BookingCreatedEvent;
+import ru.kalinin.common.kafka.event.booking.BookingPaymentFailedEvent;
+import ru.kalinin.common.kafka.event.booking.BookingPaymentSuccessfulEvent;
 import ru.kalinin.common.kafka.event.seat.SeatReservedEvent;
 import ru.kalinin.common.kafka.event.seat.SeatReservationFailedEvent;
 import ru.kalinin.common.kafka.topics.KafkaTopics;
@@ -36,6 +38,7 @@ public class FlightConsumer {
                             LocalDateTime.now()
                     ),
                     event.bookingId(),
+                    event.bookingNumber(),
                     event.username(),
                     event.flightNumber(),
                     event.seatNumber(),
@@ -43,7 +46,7 @@ public class FlightConsumer {
             );
 
             flightProducer.sendSeatReserved(sendEvent);
-        } catch (SeatAlreadyReservedException | FlightNotFoundException | SeatNotFoundException ex) {
+        } catch (SeatAlreadyStatusException | FlightNotFoundException | SeatNotFoundException ex) {
             SeatReservationFailedEvent sendEvent = new SeatReservationFailedEvent(
                     new EventMetaData(
                             UUID.randomUUID(),
@@ -54,5 +57,19 @@ public class FlightConsumer {
             );
             flightProducer.sendSeatReservationFailed(sendEvent);
         }
+    }
+
+    @KafkaListener(
+            topics = KafkaTopics.BOOKING_PAYMENT_SUCCESSFUL
+    )
+    public void bookingSuccessfulListener(BookingPaymentSuccessfulEvent event){
+        flightService.soldSeat(event.flightNumber(), event.seatNumber());
+    }
+
+    @KafkaListener(
+            topics = KafkaTopics.BOOKING_PAYMENT_FAILED
+    )
+    public void bookingFailListener(BookingPaymentFailedEvent event){
+        flightService.availableSeat(event.flightNumber(), event.seatNumber());
     }
 }
