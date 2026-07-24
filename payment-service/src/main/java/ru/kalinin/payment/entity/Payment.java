@@ -41,4 +41,8 @@ public class Payment {
     @Column(name = "created_at", nullable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "expired_at", nullable = false)
+    @Builder.Default
+    private LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(5);
 }

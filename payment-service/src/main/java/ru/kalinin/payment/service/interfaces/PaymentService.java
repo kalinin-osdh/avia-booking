@@ -14,6 +14,8 @@ public interface PaymentService {
 
     PaymentResponse cancel(String username, UUID bookingNumber);
 
+    void checkExpiredPayments();
+
     List<PaymentResponse> getUserHistory(String username);
 
     Payment getById(Long id);

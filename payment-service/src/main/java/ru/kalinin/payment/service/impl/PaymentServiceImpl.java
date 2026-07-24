@@ -103,6 +103,29 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    public void checkExpiredPayments(){
+        List<Payment> expired = paymentRepository.findAllByStatusAndExpiredAtBefore(PaymentStatus.PENDING, LocalDateTime.now());
+
+        for (Payment payment : expired){
+            payment.setStatus(PaymentStatus.FAILED);
+
+            PaymentFailedEvent event = new PaymentFailedEvent(
+                    new EventMetaData(
+                            UUID.randomUUID(),
+                            LocalDateTime.now()
+                    ),
+                    payment.getBookingNumber(),
+                    payment.getPaymentNumber(),
+                    payment.getUsername(),
+                    payment.getPrice(),
+                    "Время оплаты истекло"
+            );
+
+            paymentProducer.sendPaymentFailed(event);
+        }
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<PaymentResponse> getUserHistory(String username) {
         return paymentMapper.toResponse(
