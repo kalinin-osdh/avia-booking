@@ -29,5 +29,4 @@ public class BookingServiceSecurityConfig extends BaseSecurityConfig {
                 );
         return http.build();
     }
-
 }

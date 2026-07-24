@@ -1,4 +1,18 @@
 package ru.kalinin.payment.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.UUID;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PaymentRequest {
+    @NotNull(message = "Введите уникальный номер бронирования")
+    private UUID bookingNumber;
 }

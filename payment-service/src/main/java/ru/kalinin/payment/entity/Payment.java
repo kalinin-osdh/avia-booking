@@ -24,9 +24,11 @@ public class Payment {
     @Builder.Default
     private UUID paymentNumber = UUID.randomUUID();
 
-    // todo должен ли быть booking_number UNIQUE?
-    @Column(name = "booking_number", nullable = false)
+    @Column(name = "booking_number", nullable = false, unique = true)
     private UUID bookingNumber;
+
+    @Column(name = "username", nullable = false)
+    private String username;
 
     @Column(name = "price", nullable = false)
     private BigDecimal price;

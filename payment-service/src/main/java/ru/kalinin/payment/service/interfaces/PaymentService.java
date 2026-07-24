@@ -1,4 +1,19 @@
 package ru.kalinin.payment.service.interfaces;
 
+import ru.kalinin.payment.dto.response.PaymentResponse;
+import ru.kalinin.payment.entity.Payment;
+
+import java.util.List;
+import java.util.UUID;
+
 public interface PaymentService {
+    PaymentResponse confirm(String username, UUID bookingNumber);
+
+    PaymentResponse cancel(String username, UUID bookingNumber);
+
+    List<PaymentResponse> getUserHistory(String username);
+
+    Payment getById(Long id);
+
+    Payment getByBookingNumber(UUID bookingNumber);
 }

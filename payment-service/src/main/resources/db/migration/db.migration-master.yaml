@@ -1,3 +1,4 @@
-databaseChangelog:
+databaseChangeLog:
   - include:
-      file:
+      file: db/migration/v1/01-create-payments-table.sql
+      relativeToChangelogFile: false

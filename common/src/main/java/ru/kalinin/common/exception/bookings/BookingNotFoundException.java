@@ -1,4 +1,4 @@
-package ru.kalinin.common.exception.booking;
+package ru.kalinin.common.exception.bookings;
 
 import ru.kalinin.common.exception.NotFoundException;
 

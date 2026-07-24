@@ -11,7 +11,7 @@ import ru.kalinin.booking.entity.enums.BookingStatus;
 import ru.kalinin.booking.kafka.BookingProducer;
 import ru.kalinin.booking.repository.BookingRepository;
 import ru.kalinin.booking.service.interfaces.BookingService;
-import ru.kalinin.common.exception.booking.BookingNotFoundException;
+import ru.kalinin.common.exception.bookings.BookingNotFoundException;
 import ru.kalinin.common.kafka.event.booking.BookingCreatedEvent;
 import ru.kalinin.common.kafka.event.EventMetaData;
 

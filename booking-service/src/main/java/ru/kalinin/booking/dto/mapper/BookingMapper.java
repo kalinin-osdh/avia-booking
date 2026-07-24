@@ -22,7 +22,6 @@ public class BookingMapper {
     public BookingResponse toResponse(Booking booking){
         return BookingResponse.builder()
                 .bookingNumber(booking.getBookingNumber())
-                .username(booking.getUsername())
                 .flightNumber(booking.getFlightNumber())
                 .seatNumber(booking.getSeatNumber())
                 .status(booking.getStatus())

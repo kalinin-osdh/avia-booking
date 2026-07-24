@@ -17,9 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminSeatController {
     private final AdminSeatService adminSeatService;
-    // todo переделать логику total/ available seats при create delete
-    // todo сейчас total seats - max кол-во seats в flight
-    // todo а available seats - конкретно добавленные места в flight
+
     @GetMapping("/{id}")
     public ResponseEntity<List<SeatAdminResponse>> findSeatsByFlightId(@PathVariable Long id) {
         return ResponseEntity.ok(adminSeatService.findByFlightId(id));

@@ -30,6 +30,5 @@ public class BookingConsumer {
     }
 }
 
-// todo добавить ОЖИДАНИЕ ОПЛАТЫ?
 
 // todo обработать try { } catch () { отправить в notification service уведомление об ошибке пользователю ?? }

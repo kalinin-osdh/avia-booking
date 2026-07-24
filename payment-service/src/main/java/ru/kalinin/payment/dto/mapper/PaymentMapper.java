@@ -5,14 +5,17 @@ import ru.kalinin.payment.dto.response.PaymentResponse;
 import ru.kalinin.payment.entity.Payment;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class PaymentMapper {
 
-    public Payment toEntity(UUID bookingNumber, BigDecimal price) {
+    public Payment toEntity(String username, UUID bookingNumber, BigDecimal price) {
         return Payment.builder()
                 .bookingNumber(bookingNumber)
+                .username(username)
                 .price(price)
                 .build();
     }
@@ -25,5 +28,9 @@ public class PaymentMapper {
                 .status(payment.getStatus())
                 .createdAt(payment.getCreatedAt())
                 .build();
+    }
+
+    public List<PaymentResponse> toResponse(List<Payment> payment){
+        return payment.stream().map(this::toResponse).collect(Collectors.toList());
     }
 }

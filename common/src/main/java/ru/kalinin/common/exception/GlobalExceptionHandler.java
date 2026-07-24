@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.kalinin.common.dto.ErrorResponse;
 import ru.kalinin.common.exception.flights.FlightExistsException;
+import ru.kalinin.common.exception.payments.PaymentUserNotEqualsException;
 import ru.kalinin.common.exception.refresh_token.RefreshTokenNotValid;
 import ru.kalinin.common.exception.seats.SeatAlreadyReservedException;
-import ru.kalinin.common.exception.user.UserExistsException;
+import ru.kalinin.common.exception.users.UserExistsException;
 
 import java.util.stream.Collectors;
 
@@ -76,6 +77,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleException(SeatAlreadyReservedException ex){
         return new ErrorResponse("Ошибка бронирования", ex.getMessage());
+    }
+
+    @ExceptionHandler(PaymentUserNotEqualsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleException(PaymentUserNotEqualsException ex){
+        return new ErrorResponse("Ошибка оплаты", ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

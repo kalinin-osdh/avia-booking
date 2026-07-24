@@ -1,5 +1,6 @@
 package ru.kalinin.payment.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
 import ru.kalinin.payment.entity.enums.PaymentStatus;
@@ -15,5 +16,6 @@ public class PaymentResponse {
     private UUID bookingNumber;
     private BigDecimal price;
     private PaymentStatus status;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 }

@@ -17,8 +17,8 @@ import ru.kalinin.auth.security.JwtTokenService;
 import ru.kalinin.auth.service.interfaces.AuthService;
 import ru.kalinin.auth.service.interfaces.RefreshTokenService;
 import ru.kalinin.common.exception.refresh_token.RefreshTokenNotValid;
-import ru.kalinin.common.exception.user.UserExistsException;
-import ru.kalinin.common.exception.user.UserNotFoundException;
+import ru.kalinin.common.exception.users.UserExistsException;
+import ru.kalinin.common.exception.users.UserNotFoundException;
 
 @Service
 @Transactional

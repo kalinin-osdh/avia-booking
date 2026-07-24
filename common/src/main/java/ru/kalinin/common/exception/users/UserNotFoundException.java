@@ -1,4 +1,4 @@
-package ru.kalinin.common.exception.user;
+package ru.kalinin.common.exception.users;
 
 import ru.kalinin.common.exception.NotFoundException;
 
