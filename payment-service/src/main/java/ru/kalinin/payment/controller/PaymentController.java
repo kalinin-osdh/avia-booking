@@ -18,7 +18,7 @@ import java.util.List;
 public class PaymentController {
     private final PaymentService paymentService;
 
-    @PostMapping("/confirm")
+    @PostMapping("/pay")
     public ResponseEntity<PaymentResponse> confirm(
             @AuthenticationPrincipal JwtUserPrincipal user,
             @Valid @RequestBody PaymentRequest request) {

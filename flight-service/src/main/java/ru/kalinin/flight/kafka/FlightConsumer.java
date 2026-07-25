@@ -53,6 +53,7 @@ public class FlightConsumer {
                             LocalDateTime.now()
                     ),
                     event.bookingId(),
+                    event.bookingNumber(),
                     ex.getMessage()
             );
             flightProducer.sendSeatReservationFailed(sendEvent);

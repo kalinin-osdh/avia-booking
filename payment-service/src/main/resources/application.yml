@@ -31,7 +31,6 @@ spring:
     consumer:
       group-id: payment-group
 
-
 jwt:
   secret: 8c2a7b4f9e1d6a3c5f8b0d2e4a6c8e0f2a4b6d8f0e2c4a6b8d0f2e4a6c8e0f
 
