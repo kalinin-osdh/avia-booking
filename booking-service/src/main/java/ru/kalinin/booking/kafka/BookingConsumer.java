@@ -5,7 +5,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import ru.kalinin.booking.entity.Booking;
 import ru.kalinin.booking.service.interfaces.BookingService;
-import ru.kalinin.common.kafka.event.EventMetaData;
+import ru.kalinin.common.kafka.event.EventMetadata;
 import ru.kalinin.common.kafka.event.booking.BookingPaymentFailedEvent;
 import ru.kalinin.common.kafka.event.booking.BookingPaymentSuccessfulEvent;
 import ru.kalinin.common.kafka.event.payment.PaymentCreatedEvent;
@@ -30,17 +30,13 @@ public class BookingConsumer {
     public void seatReservedListener(SeatReservedEvent event) {
         bookingService.confirmBooking(event.bookingId(), event.price());
 
-        PaymentCreatedEvent createdEvent = new PaymentCreatedEvent(
-                new EventMetaData(
-                        UUID.randomUUID(),
-                        LocalDateTime.now()
-                ),
-                event.bookingNumber(),
-                event.username(),
-                event.price()
+        bookingProducer.sendPaymentCreated(
+                PaymentCreatedEvent.of(
+                        event.bookingNumber(),
+                        event.username(),
+                        event.price()
+                )
         );
-
-        bookingProducer.sendPaymentCreated(createdEvent);
     }
 
     @KafkaListener(
@@ -58,17 +54,13 @@ public class BookingConsumer {
 
         Booking booking = bookingService.getByBookingNumber(event.bookingNumber());
 
-        BookingPaymentSuccessfulEvent savedEvent = new BookingPaymentSuccessfulEvent(
-                new EventMetaData(
-                        UUID.randomUUID(),
-                        LocalDateTime.now()
-                ),
-                booking.getBookingNumber(),
-                booking.getFlightNumber(),
-                booking.getSeatNumber()
+        bookingProducer.sendPaymentSuccess(
+                BookingPaymentSuccessfulEvent.of(
+                        booking.getBookingNumber(),
+                        booking.getFlightNumber(),
+                        booking.getSeatNumber()
+                )
         );
-
-        bookingProducer.sendPaymentSuccess(savedEvent);
     }
 
     @KafkaListener(
@@ -79,18 +71,14 @@ public class BookingConsumer {
 
         Booking booking = bookingService.getByBookingNumber(event.bookingNumber());
 
-        BookingPaymentFailedEvent savedEvent = new BookingPaymentFailedEvent(
-                new EventMetaData(
-                        UUID.randomUUID(),
-                        LocalDateTime.now()
-                ),
-                booking.getBookingNumber(),
-                booking.getFlightNumber(),
-                booking.getSeatNumber(),
-                event.reason()
+        bookingProducer.sendPaymentFailed(
+                BookingPaymentFailedEvent.of(
+                        booking.getBookingNumber(),
+                        booking.getFlightNumber(),
+                        booking.getSeatNumber(),
+                        event.reason()
+                )
         );
-
-        bookingProducer.sendPaymentFailed(savedEvent);
     }
 }
 

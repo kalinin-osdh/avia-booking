@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.kalinin.common.exception.payments.PaymentAlreadyExistsException;
 import ru.kalinin.common.exception.payments.PaymentNotFoundException;
 import ru.kalinin.common.exception.payments.PaymentUserNotEqualsException;
-import ru.kalinin.common.kafka.event.EventMetaData;
 import ru.kalinin.common.kafka.event.payment.PaymentFailedEvent;
 import ru.kalinin.common.kafka.event.payment.PaymentSuccessfulEvent;
 import ru.kalinin.payment.dto.mapper.PaymentMapper;
@@ -55,18 +54,14 @@ public class PaymentServiceImpl implements PaymentService {
 
         payment.setStatus(PaymentStatus.SUCCESS);
 
-        PaymentSuccessfulEvent event = new PaymentSuccessfulEvent(
-                new EventMetaData(
-                        UUID.randomUUID(),
-                        LocalDateTime.now()
-                ),
-                payment.getBookingNumber(),
-                payment.getPaymentNumber(),
-                payment.getUsername(),
-                payment.getPrice()
+        paymentProducer.sendPaymentSuccess(
+                PaymentSuccessfulEvent.of(
+                        payment.getBookingNumber(),
+                        payment.getPaymentNumber(),
+                        payment.getUsername(),
+                        payment.getPrice()
+                )
         );
-
-        paymentProducer.sendPaymentSuccess(event);
 
         return paymentMapper.toResponse(payment);
     }
@@ -84,43 +79,35 @@ public class PaymentServiceImpl implements PaymentService {
 
         payment.setStatus(PaymentStatus.FAILED);
 
-        PaymentFailedEvent event = new PaymentFailedEvent(
-                new EventMetaData(
-                        UUID.randomUUID(),
-                        LocalDateTime.now()
-                ),
-                payment.getBookingNumber(),
-                payment.getPaymentNumber(),
-                payment.getUsername(),
-                payment.getPrice(),
-                "Ошибка при оплате."
+        paymentProducer.sendPaymentFailed(
+                PaymentFailedEvent.of(
+                        payment.getBookingNumber(),
+                        payment.getPaymentNumber(),
+                        payment.getUsername(),
+                        payment.getPrice(),
+                        "Ошибка при оплате."
+                )
         );
-
-        paymentProducer.sendPaymentFailed(event);
 
         return paymentMapper.toResponse(payment);
     }
 
     @Override
-    public void checkExpiredPayments(){
+    public void checkExpiredPayments() {
         List<Payment> expired = paymentRepository.findAllByStatusAndExpiredAtBefore(PaymentStatus.PENDING, LocalDateTime.now());
 
-        for (Payment payment : expired){
+        for (Payment payment : expired) {
             payment.setStatus(PaymentStatus.FAILED);
 
-            PaymentFailedEvent event = new PaymentFailedEvent(
-                    new EventMetaData(
-                            UUID.randomUUID(),
-                            LocalDateTime.now()
-                    ),
-                    payment.getBookingNumber(),
-                    payment.getPaymentNumber(),
-                    payment.getUsername(),
-                    payment.getPrice(),
-                    "Время оплаты истекло"
+            paymentProducer.sendPaymentFailed(
+                    PaymentFailedEvent.of(
+                            payment.getBookingNumber(),
+                            payment.getPaymentNumber(),
+                            payment.getUsername(),
+                            payment.getPrice(),
+                            "Время оплаты истекло"
+                    )
             );
-
-            paymentProducer.sendPaymentFailed(event);
         }
     }
 

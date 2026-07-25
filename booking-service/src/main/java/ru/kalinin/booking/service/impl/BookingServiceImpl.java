@@ -13,10 +13,8 @@ import ru.kalinin.booking.repository.BookingRepository;
 import ru.kalinin.booking.service.interfaces.BookingService;
 import ru.kalinin.common.exception.bookings.BookingNotFoundException;
 import ru.kalinin.common.kafka.event.booking.BookingCreatedEvent;
-import ru.kalinin.common.kafka.event.EventMetaData;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,19 +30,15 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponse booking(String username, BookingRequest request) {
         Booking saved = bookingRepository.save(bookingMapper.toEntity(request, username));
 
-        BookingCreatedEvent event = new BookingCreatedEvent(
-                new EventMetaData(
-                        UUID.randomUUID(),
-                        LocalDateTime.now()
-                ),
-                saved.getId(),
-                saved.getBookingNumber(),
-                username,
-                saved.getFlightNumber(),
-                saved.getSeatNumber()
+        bookingProducer.sendBookingCreated(
+                BookingCreatedEvent.of(
+                        saved.getId(),
+                        saved.getBookingNumber(),
+                        username,
+                        saved.getFlightNumber(),
+                        saved.getSeatNumber()
+                )
         );
-
-        bookingProducer.sendBookingCreated(event);
 
         return bookingMapper.toResponse(saved);
     }
@@ -57,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void confirmBooking(Long id, BigDecimal price){
+    public void confirmBooking(Long id, BigDecimal price) {
         Booking booking = getById(id);
 
         if (booking.getStatus() == BookingStatus.CONFIRMED)
@@ -68,7 +62,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void declineBooking(Long id){
+    public void declineBooking(Long id) {
         Booking booking = getById(id);
 
         if (booking.getStatus() == BookingStatus.DECLINED)
@@ -78,7 +72,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void successPayment(UUID bookingNumber){
+    public void successPayment(UUID bookingNumber) {
         Booking booking = getByBookingNumber(bookingNumber);
 
         if (booking.getStatus() == BookingStatus.PAYMENT_SUCCESS)
@@ -88,7 +82,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void failPayment(UUID bookingNumber){
+    public void failPayment(UUID bookingNumber) {
         Booking booking = getByBookingNumber(bookingNumber);
 
         if (booking.getStatus() == BookingStatus.PAYMENT_FAILED)
@@ -100,18 +94,18 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public Booking getById(Long id){
+    public Booking getById(Long id) {
         return bookingRepository.findById(id).orElseThrow(
-                ()-> new BookingNotFoundException(id)
+                () -> new BookingNotFoundException(id)
         );
     }
 
 
     @Override
     @Transactional(readOnly = true)
-    public Booking getByBookingNumber(UUID bookingNumber){
+    public Booking getByBookingNumber(UUID bookingNumber) {
         return bookingRepository.findByBookingNumber(bookingNumber).orElseThrow(
-                ()-> new BookingNotFoundException(bookingNumber)
+                () -> new BookingNotFoundException(bookingNumber)
         );
     }
 }
