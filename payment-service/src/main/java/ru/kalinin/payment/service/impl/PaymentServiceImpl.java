@@ -31,7 +31,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final PaymentProducer paymentProducer;
-    // todo ожидание оплаты - ?
 
     @Override
     public void create(String username, UUID bookingNumber, BigDecimal price) {

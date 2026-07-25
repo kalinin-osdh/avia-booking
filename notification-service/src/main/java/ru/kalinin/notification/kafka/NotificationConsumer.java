@@ -13,30 +13,20 @@ import ru.kalinin.common.kafka.event.seat.SeatReservationFailedEvent;
 import ru.kalinin.common.kafka.event.seat.SeatReservedEvent;
 import ru.kalinin.common.kafka.topics.KafkaTopics;
 import ru.kalinin.notification.service.TelegramService;
+import ru.kalinin.notification.util.MessageBuilder;
 
 @Service
 @RequiredArgsConstructor
 public class NotificationConsumer {
     private final TelegramService telegramService;
+    private final MessageBuilder messageBuilder;
 
     @KafkaListener(
             topics = KafkaTopics.BOOKING_CREATED
     )
     public void sendNotification(BookingCreatedEvent event) {
         telegramService.sendMessage(
-                """
-                        Создана запись о бронировании
-                        
-                        Бронь: %s
-                        Пользователь: %s
-                        Номер самолета: %s
-                        Номер места: %s
-                        """.formatted(
-                        event.bookingNumber(),
-                        event.username(),
-                        event.flightNumber(),
-                        event.seatNumber()
-                )
+                messageBuilder.build(event)
         );
     }
 
@@ -45,21 +35,7 @@ public class NotificationConsumer {
     )
     public void sendNotification(SeatReservedEvent event) {
         telegramService.sendMessage(
-                """
-                        Место свободно:
-                        
-                        Бронь: %s
-                        Пользователь: %s
-                        Номер самолета: %s
-                        Номер места: %s
-                        Цена места: %s
-                        """.formatted(
-                        event.bookingNumber(),
-                        event.username(),
-                        event.flightNumber(),
-                        event.seatNumber(),
-                        event.price()
-                )
+                messageBuilder.build(event)
         );
     }
 
@@ -68,15 +44,7 @@ public class NotificationConsumer {
     )
     public void sendNotification(SeatReservationFailedEvent event) {
         telegramService.sendMessage(
-                """
-                        Место не свободно:
-                        
-                        Бронь: %s
-                        Причина: %s
-                        """.formatted(
-                        event.bookingNumber(),
-                        event.reason()
-                )
+                messageBuilder.build(event)
         );
     }
 
@@ -85,17 +53,7 @@ public class NotificationConsumer {
     )
     public void sendNotification(PaymentCreatedEvent event) {
         telegramService.sendMessage(
-                """
-                        Платеж создан:
-                        
-                        Бронь: %s
-                        Пользователь: %s
-                        Цена: %s
-                        """.formatted(
-                        event.bookingNumber(),
-                        event.username(),
-                        event.price()
-                )
+                messageBuilder.build(event)
         );
     }
 
@@ -104,19 +62,7 @@ public class NotificationConsumer {
     )
     public void sendNotification(PaymentSuccessfulEvent event) {
         telegramService.sendMessage(
-                """
-                        Платеж подтвержден:
-                        
-                        Бронь: %s
-                        Платеж: %s
-                        Пользователь: %s
-                        Цена: %s
-                        """.formatted(
-                        event.bookingNumber(),
-                        event.paymentNumber(),
-                        event.username(),
-                        event.price()
-                )
+                messageBuilder.build(event)
         );
     }
 
@@ -125,21 +71,7 @@ public class NotificationConsumer {
     )
     public void sendNotification(PaymentFailedEvent event) {
         telegramService.sendMessage(
-                """
-                        Платеж отменен:
-                        
-                        Бронь: %s
-                        Платеж: %s
-                        Пользователь: %s
-                        Цена: %s
-                        Причина: %s
-                        """.formatted(
-                        event.bookingNumber(),
-                        event.paymentNumber(),
-                        event.username(),
-                        event.price(),
-                        event.reason()
-                )
+                messageBuilder.build(event)
         );
     }
 
@@ -148,17 +80,7 @@ public class NotificationConsumer {
     )
     public void sendNotification(BookingPaymentSuccessfulEvent event) {
         telegramService.sendMessage(
-                """
-                        Бронь оплачена:
-                        
-                        Бронь: %s
-                        Номер самолета: %s
-                        Номер места: %s
-                        """.formatted(
-                        event.bookingNumber(),
-                        event.flightNumber(),
-                        event.seatNumber()
-                )
+                messageBuilder.build(event)
         );
     }
 
@@ -167,19 +89,7 @@ public class NotificationConsumer {
     )
     public void sendNotification(BookingPaymentFailedEvent event) {
         telegramService.sendMessage(
-                """
-                        Бронь не оплачена:
-                        
-                        Бронь: %s
-                        Номер самолета: %s
-                        Номер места: %s
-                        Причина: %s
-                        """.formatted(
-                        event.bookingNumber(),
-                        event.flightNumber(),
-                        event.seatNumber(),
-                        event.reason()
-                )
+                messageBuilder.build(event)
         );
     }
 }
