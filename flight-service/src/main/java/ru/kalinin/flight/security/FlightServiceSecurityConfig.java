@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import ru.kalinin.common.config.BaseSecurityConfig;
+import ru.kalinin.common.security.config.BaseSecurityConfig;
 import ru.kalinin.common.security.filter.JwtAuthFilter;
 
 @Configuration

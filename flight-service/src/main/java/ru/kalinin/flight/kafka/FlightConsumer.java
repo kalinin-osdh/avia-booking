@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.kalinin.common.exception.flights.FlightNotFoundException;
 import ru.kalinin.common.exception.seats.SeatAlreadyStatusException;
 import ru.kalinin.common.exception.seats.SeatNotFoundException;
-import ru.kalinin.common.kafka.event.EventMetadata;
 import ru.kalinin.common.kafka.event.booking.BookingCreatedEvent;
 import ru.kalinin.common.kafka.event.booking.BookingPaymentFailedEvent;
 import ru.kalinin.common.kafka.event.booking.BookingPaymentSuccessfulEvent;
@@ -16,8 +15,6 @@ import ru.kalinin.common.kafka.topics.KafkaTopics;
 import ru.kalinin.flight.service.interfaces.FlightService;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

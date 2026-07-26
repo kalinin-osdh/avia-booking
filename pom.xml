@@ -19,11 +19,14 @@
 
     <modules>
         <module>auth-service</module>
-        <module>common</module>
         <module>flight-service</module>
         <module>booking-service</module>
         <module>payment-service</module>
         <module>notification-service</module>
+        <module>gateway-service</module>
+        <module>common-security</module>
+        <module>common-exception</module>
+        <module>common-kafka</module>
     </modules>
 
     <properties>
@@ -34,8 +37,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-cloud.version>2025.1.0</spring-cloud.version>
         <jjwt.version>0.12.5</jjwt.version>
-        <telegram-bots.version>6.9.7.1</telegram-bots.version>
         <spring-kafka.version>3.2.5</spring-kafka.version>
+        <telegram-bots.version>6.9.7.1</telegram-bots.version>
     </properties>
 
     <dependencyManagement>
@@ -55,6 +58,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.telegram</groupId>
+                <artifactId>telegrambots-spring-boot-starter</artifactId>
+                <version>${telegram-bots.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-api</artifactId>
                 <version>${jjwt.version}</version>
@@ -70,12 +79,6 @@
                 <artifactId>jjwt-jackson</artifactId>
                 <version>${jjwt.version}</version>
                 <scope>runtime</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.telegram</groupId>
-                <artifactId>telegrambots-spring-boot-starter</artifactId>
-                <version>${telegram-bots.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

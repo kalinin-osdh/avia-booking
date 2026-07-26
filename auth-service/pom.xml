@@ -24,8 +24,13 @@
     <dependencies>
         <dependency>
             <groupId>ru.kalinin</groupId>
-            <artifactId>common</artifactId>
-            <version>${project.version}</version>
+            <artifactId>common-exception</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>ru.kalinin</groupId>
+            <artifactId>common-security</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -79,17 +84,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

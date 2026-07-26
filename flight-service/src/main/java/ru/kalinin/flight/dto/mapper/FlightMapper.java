@@ -3,7 +3,7 @@ package ru.kalinin.flight.dto.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
-import ru.kalinin.common.dto.PageResponse;
+import ru.kalinin.flight.dto.response.PageResponse;
 import ru.kalinin.flight.dto.request.FlightRequest;
 import ru.kalinin.flight.dto.response.*;
 import ru.kalinin.flight.entity.Flight;

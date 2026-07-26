@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.kalinin.common.dto.PageResponse;
+import ru.kalinin.flight.dto.response.PageResponse;
 import ru.kalinin.flight.dto.request.FlightPageRequest;
 import ru.kalinin.flight.dto.request.FlightRequest;
 import ru.kalinin.flight.dto.request.FlightUpdateRequest;

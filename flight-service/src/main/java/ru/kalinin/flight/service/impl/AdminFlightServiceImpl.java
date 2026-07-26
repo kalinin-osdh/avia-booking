@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kalinin.common.dto.PageResponse;
+import ru.kalinin.flight.dto.response.PageResponse;
 import ru.kalinin.common.exception.flights.FlightExistsException;
 import ru.kalinin.common.exception.flights.FlightNotFoundException;
 import ru.kalinin.flight.dto.mapper.FlightMapper;

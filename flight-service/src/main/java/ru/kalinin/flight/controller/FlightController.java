@@ -1,10 +1,9 @@
 package ru.kalinin.flight.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.kalinin.common.dto.PageResponse;
+import ru.kalinin.flight.dto.response.PageResponse;
 import ru.kalinin.flight.dto.request.FlightPageRequest;
 import ru.kalinin.flight.dto.response.FlightWithOutSeatsResponse;
 import ru.kalinin.flight.dto.response.FlightWithSeatsResponse;

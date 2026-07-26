@@ -4,13 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.kalinin.auth.service.interfaces.RefreshTokenService;
 import ru.kalinin.common.exception.refresh_token.RefreshTokenNotFoundException;
 
 import java.security.SecureRandom;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 

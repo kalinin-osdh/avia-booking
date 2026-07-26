@@ -15,9 +15,6 @@ import ru.kalinin.common.kafka.event.seat.SeatReservationFailedEvent;
 import ru.kalinin.common.kafka.event.seat.SeatReservedEvent;
 import ru.kalinin.common.kafka.topics.KafkaTopics;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class BookingConsumer {
