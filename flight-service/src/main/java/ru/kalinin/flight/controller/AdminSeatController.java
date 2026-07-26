@@ -18,7 +18,7 @@ import java.util.List;
 public class AdminSeatController {
     private final AdminSeatService adminSeatService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/flight/{id}")
     public ResponseEntity<List<SeatAdminResponse>> findSeatsByFlightId(@PathVariable Long id) {
         return ResponseEntity.ok(adminSeatService.findByFlightId(id));
     }
