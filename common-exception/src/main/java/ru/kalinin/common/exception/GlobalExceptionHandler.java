@@ -25,7 +25,6 @@ public class GlobalExceptionHandler {
         return new ErrorResponse("Not found", ex.getMessage());
     }
 
-
     @ExceptionHandler(RefreshTokenNotValid.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleException(RefreshTokenNotValid ex) {

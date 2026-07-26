@@ -9,7 +9,10 @@ spring:
     bootstrap-servers: localhost:9092
     consumer:
       group-id: notification-group
-
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: ru.kalinin.common.kafka.event.*
 
 telegram:
   token: 8118764794:AAEpR5q1mvFfFmlV_-8fDY-al9NyBY_O87s
