@@ -40,7 +40,6 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@AuthenticationPrincipal JwtUserPrincipal user) {
         authService.logout(user.username());
-        SecurityContextHolder.clearContext();
         return ResponseEntity.ok().build();
     }
 }

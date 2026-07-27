@@ -27,6 +27,7 @@
         <module>common-security</module>
         <module>common-exception</module>
         <module>common-kafka</module>
+        <module>common-test</module>
     </modules>
 
     <properties>

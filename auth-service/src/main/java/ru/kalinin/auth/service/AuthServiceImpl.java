@@ -1,4 +1,4 @@
-package ru.kalinin.auth.service.impl;
+package ru.kalinin.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
