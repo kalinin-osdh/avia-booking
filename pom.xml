@@ -40,10 +40,19 @@
         <jjwt.version>0.12.5</jjwt.version>
         <spring-kafka.version>3.2.5</spring-kafka.version>
         <telegram-bots.version>6.9.7.1</telegram-bots.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>

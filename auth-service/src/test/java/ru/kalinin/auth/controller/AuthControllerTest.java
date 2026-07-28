@@ -1,30 +1,26 @@
 package ru.kalinin.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.kalinin.auth.dto.request.AuthRequest;
 import ru.kalinin.auth.dto.request.RefreshRequest;
 import ru.kalinin.auth.dto.response.AuthResponse;
 import ru.kalinin.auth.service.interfaces.AuthService;
-import ru.kalinin.common.security.dto.JwtUserPrincipal;
 import ru.kalinin.common.test.config.MockWithJwtUser;
 import ru.kalinin.common.test.config.TestSecurityConfig;
 
-import java.util.Collections;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(AuthController.class)
 @Import(TestSecurityConfig.class)
+@Tag("controller")
 public class AuthControllerTest {
 
     @Autowired
@@ -46,8 +43,8 @@ public class AuthControllerTest {
     private static AuthRequest request;
     private static AuthResponse response;
 
-    @BeforeAll
-    static void setUpTestData() {
+    @BeforeEach
+    void setUpTestData() {
         request = new AuthRequest(
                 "kalinin",
                 "kalinin13"

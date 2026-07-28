@@ -36,6 +36,7 @@
             <groupId>ru.kalinin</groupId>
             <artifactId>common-test</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

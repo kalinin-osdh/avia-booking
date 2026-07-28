@@ -1,16 +1,12 @@
-package ru.kalinin.auth.service;
+package ru.kalinin.auth.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.kalinin.auth.dto.mapper.UserMapper;
 import ru.kalinin.auth.dto.request.AuthRequest;
 import ru.kalinin.auth.dto.request.RefreshRequest;
@@ -20,7 +16,6 @@ import ru.kalinin.auth.repository.UserRepository;
 import ru.kalinin.auth.security.JwtTokenService;
 import ru.kalinin.auth.service.interfaces.AuthService;
 import ru.kalinin.auth.service.interfaces.RefreshTokenService;
-import ru.kalinin.common.exception.model.ErrorResponse;
 import ru.kalinin.common.exception.refresh_token.RefreshTokenNotValid;
 import ru.kalinin.common.exception.users.UserExistsException;
 import ru.kalinin.common.exception.users.UserNotFoundException;

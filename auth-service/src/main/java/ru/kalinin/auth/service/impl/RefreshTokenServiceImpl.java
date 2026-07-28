@@ -1,11 +1,10 @@
-package ru.kalinin.auth.service;
+package ru.kalinin.auth.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import ru.kalinin.auth.service.interfaces.RefreshTokenService;
-import ru.kalinin.common.exception.refresh_token.RefreshTokenNotFoundException;
 
 import java.security.SecureRandom;
 import java.time.Duration;
@@ -14,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class RefreshTokenRedisService implements RefreshTokenService {
+public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final RedisTemplate<String, String> redisTemplate;
 
     private final SecureRandom secureRandom = new SecureRandom();
