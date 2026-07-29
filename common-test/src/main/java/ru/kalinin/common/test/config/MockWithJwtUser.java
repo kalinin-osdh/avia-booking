@@ -17,4 +17,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface MockWithJwtUser {
     long id() default 1L;
     String username() default "kalinin";
+    String role() default "USER";
 }
