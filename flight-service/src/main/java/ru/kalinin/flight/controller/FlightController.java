@@ -20,7 +20,7 @@ public class FlightController {
     public ResponseEntity<PageResponse<FlightWithOutSeatsResponse>> findFlights(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
-            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "flightNumber") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDirection,
             @RequestParam(required = false) String departureCity,
             @RequestParam(required = false) String arrivalCity) {
