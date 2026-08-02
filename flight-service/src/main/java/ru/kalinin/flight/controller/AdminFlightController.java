@@ -43,6 +43,7 @@ public class AdminFlightController {
     public ResponseEntity<FlightAdminResponse> findFlightById(@PathVariable Long id){
         return ResponseEntity.ok(adminFlightService.findById(id));
     }
+
     @PostMapping
     public ResponseEntity<FlightAdminResponse> createFlight(@Valid @RequestBody FlightRequest request){
         return ResponseEntity.status(HttpStatus.CREATED).body(adminFlightService.create(request));

@@ -23,8 +23,9 @@ public class TestSecurityConfig {
                         )
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/logout").authenticated()
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/auth/logout").authenticated() // auth-service
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN") // flight-service
+                        .requestMatchers("/api/v1/booking/**").authenticated() // booking-service
                         .anyRequest().permitAll()
                 )
                 .build();

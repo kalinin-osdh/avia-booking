@@ -36,10 +36,10 @@ class AdminSeatControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper mapper;
 
     @MockitoBean
-    private AdminSeatService adminSeatService;
+    private AdminSeatService service;
 
     private List<SeatAdminResponse> responses;
 
@@ -67,7 +67,7 @@ class AdminSeatControllerTest {
     @DisplayName("GET /api/v1/admin/seats/flight/{id} - 200 Получить список мест полета по его ID")
     @MockWithJwtUser(role = "ADMIN")
     void shouldFindSeatsByFlightId() throws Exception {
-        when(adminSeatService.findByFlightId(17L)).thenReturn(responses);
+        when(service.findByFlightId(17L)).thenReturn(responses);
 
         mockMvc.perform(get("/api/v1/admin/seats/flight/{id}", 17))
                 .andExpect(status().isOk())
@@ -76,6 +76,7 @@ class AdminSeatControllerTest {
                 .andExpect(jsonPath("$[1].id").value(2L))
                 .andExpect(jsonPath("$[1].flightId").value(17L));
 
+        verify(service).findByFlightId(17L);
     }
 
     @Test
@@ -88,15 +89,15 @@ class AdminSeatControllerTest {
                 SeatStatus.AVAILABLE,
                 BigDecimal.valueOf(1250)
         );
-        when(adminSeatService.create(any(SeatRequest.class))).thenReturn(responses.get(1));
+        when(service.create(any(SeatRequest.class))).thenReturn(responses.get(1));
 
         mockMvc.perform(post("/api/v1/admin/seats")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.seatNumber").value(responses.get(1).getSeatNumber()));
 
-        verify(adminSeatService, times(1)).create(any(SeatRequest.class));
+        verify(service, times(1)).create(any(SeatRequest.class));
     }
 
     @Test
@@ -118,27 +119,27 @@ class AdminSeatControllerTest {
                 .price(BigDecimal.valueOf(2250))
                 .build();
 
-        when(adminSeatService.update(eq(2L), any(SeatRequest.class))).thenReturn(updatedResponse);
+        when(service.update(eq(2L), any(SeatRequest.class))).thenReturn(updatedResponse);
 
         mockMvc.perform(put("/api/v1/admin/seats/{id}", 2L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(updatedResponse.getId()))
                 .andExpect(jsonPath("$.price").value(updatedResponse.getPrice()));
 
-        verify(adminSeatService, times(1)).update(eq(2L), any(SeatRequest.class));
+        verify(service, times(1)).update(eq(2L), any(SeatRequest.class));
     }
 
     @Test
     @DisplayName("DELETE /api/v1/admin/seats/{id} - 204 Удалить место")
     @MockWithJwtUser(role = "ADMIN")
     void shouldDeleteSeat() throws Exception {
-        doNothing().when(adminSeatService).delete(2L);
+        doNothing().when(service).delete(2L);
 
         mockMvc.perform(delete("/api/v1/admin/seats/{id}",2L))
                 .andExpect(status().isNoContent());
 
-        verify(adminSeatService, times(1)).delete(2L);
+        verify(service, times(1)).delete(2L);
     }
 }
