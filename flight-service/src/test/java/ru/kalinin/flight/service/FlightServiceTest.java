@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import ru.kalinin.common.exception.flights.FlightNotFoundException;
 import ru.kalinin.common.exception.seats.SeatAlreadyStatusException;
 import ru.kalinin.common.exception.seats.SeatNotFoundException;
+import ru.kalinin.flight.dto.SeatCountsResponseTest;
 import ru.kalinin.flight.dto.mapper.FlightMapper;
 import ru.kalinin.flight.dto.request.FlightPageRequest;
 import ru.kalinin.flight.dto.response.FlightWithOutSeatsResponse;
@@ -55,6 +56,9 @@ public class FlightServiceTest {
 
     private Flight flight;
 
+    private static LocalDateTime departureTime = LocalDateTime.of(2030,12,30,12,25);
+    private static LocalDateTime arrivalTime = LocalDateTime.of(2030,12,30,15,45);
+
     @BeforeEach
     void setUpTestData() {
         flight = Flight.builder()
@@ -62,8 +66,8 @@ public class FlightServiceTest {
                 .flightNumber("1A")
                 .departureCity("MOSCOW")
                 .arrivalCity("SOCHI")
-                .departureTime(LocalDateTime.now().plusDays(1))
-                .arrivalTime(LocalDateTime.now().plusDays(2))
+                .departureTime(departureTime)
+                .arrivalTime(arrivalTime)
                 .seats(List.of())
                 .build();
     }
@@ -77,8 +81,8 @@ public class FlightServiceTest {
                 .flightNumber("1A")
                 .departureCity("MOSCOW")
                 .arrivalCity("SOCHI")
-                .departureTime(LocalDateTime.now().plusDays(1))
-                .arrivalTime(LocalDateTime.now().plusDays(2))
+                .departureTime(departureTime)
+                .arrivalTime(arrivalTime)
                 .build();
 
         Page<Flight> page = new PageImpl<>(List.of(flight));
@@ -94,7 +98,7 @@ public class FlightServiceTest {
         when(flightRepository.findAllWithFilter(
                 isNull(), isNull(), any(Pageable.class)
         )).thenReturn(page);
-        when(flightMapper.toPageResponse(any(Page.class)))
+        when(flightMapper.toPageResponse(page))
                 .thenReturn(expectedPageResponse);
 
         PageResponse<FlightWithOutSeatsResponse> actualPageResponse = flightService
@@ -103,7 +107,7 @@ public class FlightServiceTest {
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
 
         verify(flightRepository, times(1)).findAllWithFilter(isNull(), isNull(), pageableCaptor.capture());
-        verify(flightMapper).toPageResponse(any(Page.class));
+        verify(flightMapper).toPageResponse(page);
 
         assertEquals(flightResponse.getFlightNumber(), actualPageResponse.getContent().get(0).getFlightNumber());
 
@@ -121,19 +125,19 @@ public class FlightServiceTest {
                 .flightNumber("1A")
                 .departureCity("MOSCOW")
                 .arrivalCity("SOCHI")
-                .departureTime(LocalDateTime.now().plusDays(1))
-                .arrivalTime(LocalDateTime.now().plusDays(2))
+                .departureTime(departureTime)
+                .arrivalTime(arrivalTime)
                 .totalSeats(0L)
                 .availableSeats(0L)
                 .seats(List.of())
                 .build();
 
-        SeatCountsResponse counts = mock(SeatCountsResponse.class);
+        SeatCountsResponse countsResponse = new SeatCountsResponseTest(0L, 0L);
 
         when(flightRepository.findByFlightNumber("1A")).thenReturn(Optional.of(flight));
-        when(flightRepository.findCountSeats(1L)).thenReturn(counts);
+        when(flightRepository.findCountSeats(1L)).thenReturn(countsResponse);
         when(flightMapper.toFlightWithSeatsResponse(
-                flight, counts)
+                flight, countsResponse)
         ).thenReturn(expectedResponse);
 
         FlightWithSeatsResponse actualResponse = flightService.findByFlightNumber("1A", null);
@@ -142,7 +146,7 @@ public class FlightServiceTest {
 
         verify(flightRepository).findByFlightNumber("1A");
         verify(flightRepository).findCountSeats(1L);
-        verify(flightMapper).toFlightWithSeatsResponse(flight, counts);
+        verify(flightMapper).toFlightWithSeatsResponse(flight, countsResponse);
     }
 
     @Test
@@ -152,8 +156,8 @@ public class FlightServiceTest {
                 .flightNumber("1A")
                 .departureCity("MOSCOW")
                 .arrivalCity("SOCHI")
-                .departureTime(LocalDateTime.now().plusDays(1))
-                .arrivalTime(LocalDateTime.now().plusDays(2))
+                .departureTime(departureTime)
+                .arrivalTime(arrivalTime)
                 .totalSeats(0L)
                 .availableSeats(0L)
                 .seats(List.of())
@@ -167,12 +171,12 @@ public class FlightServiceTest {
                 .build();
         flight.setSeats(List.of(available, sold));
 
-        SeatCountsResponse counts = mock(SeatCountsResponse.class);
+        SeatCountsResponse countsResponse = new SeatCountsResponseTest(2L, 1L);
 
         when(flightRepository.findByFlightNumber("1A")).thenReturn(Optional.of(flight));
-        when(flightRepository.findCountSeats(1L)).thenReturn(counts);
+        when(flightRepository.findCountSeats(1L)).thenReturn(countsResponse);
         when(flightMapper.toFlightWithSeatsResponse(
-                flight, counts)
+                flight, countsResponse)
         ).thenReturn(expectedResponse);
 
         FlightWithSeatsResponse actualResponse = flightService.findByFlightNumber("1A", SeatStatus.AVAILABLE);
@@ -181,11 +185,11 @@ public class FlightServiceTest {
 
         verify(flightRepository).findByFlightNumber("1A");
         verify(flightRepository).findCountSeats(1L);
-        verify(flightMapper).toFlightWithSeatsResponse(flightCaptor.capture(), eq(counts));
+        verify(flightMapper).toFlightWithSeatsResponse(flightCaptor.capture(), eq(countsResponse));
 
         Flight filteredFlight = flightCaptor.getValue();
 
-        assertEquals(1, filteredFlight.getSeats().size());
+        assertEquals(countsResponse.getAvailableSeats(), filteredFlight.getSeats().size());
         assertEquals(SeatStatus.AVAILABLE, filteredFlight.getSeats().get(0).getStatus());
 
         assertEquals(expectedResponse, actualResponse);
