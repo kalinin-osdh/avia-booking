@@ -56,8 +56,8 @@ public class FlightServiceTest {
 
     private Flight flight;
 
-    private static LocalDateTime departureTime = LocalDateTime.of(2030,12,30,12,25);
-    private static LocalDateTime arrivalTime = LocalDateTime.of(2030,12,30,15,45);
+    private static LocalDateTime departureTime = LocalDateTime.of(2030, 12, 30, 12, 25);
+    private static LocalDateTime arrivalTime = LocalDateTime.of(2030, 12, 30, 15, 45);
 
     @BeforeEach
     void setUpTestData() {

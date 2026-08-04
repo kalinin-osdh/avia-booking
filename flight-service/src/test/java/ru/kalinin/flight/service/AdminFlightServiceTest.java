@@ -268,7 +268,7 @@ class AdminFlightServiceTest {
         when(flightRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(FlightNotFoundException.class,
-                ()-> service.delete(1L)
+                () -> service.delete(1L)
         );
 
         verify(flightRepository).findById(1L);
