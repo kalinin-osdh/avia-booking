@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import ru.kalinin.flight.entity.Flight;
 import ru.kalinin.flight.entity.Seat;
-import ru.kalinin.flight.entity.enums.SeatStatus;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,21 +24,10 @@ public class SeatRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("Должен найти все места для полета")
-    void shouldFindSeatsByFlight() {
-        Flight flight = Flight.builder()
-                .flightNumber("1A")
-                .departureCity("MOSCOW")
-                .arrivalCity("SOSHI")
-                .departureTime(LocalDateTime.now().plusDays(2))
-                .arrivalTime(LocalDateTime.now().plusDays(2).plusHours(2))
-                .build();
-
-        Seat seat = Seat.builder()
-                .flight(flight)
-                .seatNumber("1S")
-                .status(SeatStatus.AVAILABLE)
-                .price(BigDecimal.valueOf(1000))
-                .build();
+    void shouldReturnSeatsByFlight() {
+        System.out.println(seatRepository.count());
+        Flight flight = TestDataFactory.createFlight();
+        Seat seat = TestDataFactory.createSeat(flight);
 
         testEntityManager.persist(flight);
         testEntityManager.persist(seat);
@@ -56,14 +42,8 @@ public class SeatRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("Должен вернуть пустой список для полета у которого нет мест")
-    void shouldReturnEmptyListWhenFindSeatsByFlight() {
-        Flight flight = Flight.builder()
-                .flightNumber("1A")
-                .departureCity("MOSCOW")
-                .arrivalCity("SOSHI")
-                .departureTime(LocalDateTime.now().plusDays(2))
-                .arrivalTime(LocalDateTime.now().plusDays(2).plusHours(2))
-                .build();
+    void shouldReturnEmptySeatsListByFlight() {
+        Flight flight = TestDataFactory.createFlight();
 
         testEntityManager.persist(flight);
         testEntityManager.flush();
@@ -76,21 +56,9 @@ public class SeatRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("Должен вернуть место по ID и подгрузить полет которому принадлежит")
-    void shouldFindByIdWithFlight() {
-        Flight flight = Flight.builder()
-                .flightNumber("1A")
-                .departureCity("MOSCOW")
-                .arrivalCity("SOSHI")
-                .departureTime(LocalDateTime.now().plusDays(2))
-                .arrivalTime(LocalDateTime.now().plusDays(2).plusHours(2))
-                .build();
-
-        Seat seat = Seat.builder()
-                .flight(flight)
-                .seatNumber("1S")
-                .status(SeatStatus.AVAILABLE)
-                .price(BigDecimal.valueOf(1000))
-                .build();
+    void shouldReturnSeatWithFlightWhenSeatExists() {
+        Flight flight = TestDataFactory.createFlight();
+        Seat seat = TestDataFactory.createSeat(flight);
 
         testEntityManager.persist(flight);
         testEntityManager.persist(seat);
@@ -108,7 +76,7 @@ public class SeatRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("Должен вернуть пустой Optional когда такого места не существует")
-    void shouldReturnEmptyOptionalWhenFindByIdWithFlight() {
+    void shouldReturnEmptyOptionalWhenSeatDoesNotExist() {
         Optional<Seat> actualSeat = seatRepository.findByIdWithFlight(Long.MAX_VALUE);
 
         assertTrue(actualSeat.isEmpty());
