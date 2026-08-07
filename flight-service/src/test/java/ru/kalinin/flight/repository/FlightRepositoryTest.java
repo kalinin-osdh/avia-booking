@@ -14,10 +14,10 @@ import ru.kalinin.flight.entity.Flight;
 import ru.kalinin.flight.entity.Seat;
 import ru.kalinin.flight.entity.enums.SeatStatus;
 
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag("flight-repository")
 public class FlightRepositoryTest extends RepositoryTest {
@@ -37,7 +37,7 @@ public class FlightRepositoryTest extends RepositoryTest {
 
         boolean result = flightRepository.existsFlightByFlightNumber(flight.getFlightNumber());
 
-        assertTrue(result);
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -45,7 +45,7 @@ public class FlightRepositoryTest extends RepositoryTest {
     void shouldReturnFalseWhenFlightDoesNotExist() {
         boolean result = flightRepository.existsFlightByFlightNumber("someNumber");
 
-        assertFalse(result);
+        assertThat(result).isFalse();
     }
 
     @Test
@@ -69,8 +69,10 @@ public class FlightRepositoryTest extends RepositoryTest {
                 pageable
         );
 
-        assertEquals(1, actualPage.getContent().size());
-        assertEquals(flight1.getId(), actualPage.getContent().get(0).getId());
+        assertThat(actualPage.getContent())
+                .hasSize(1)
+                .extracting(Flight::getId)
+                .containsExactly(flight1.getId());
     }
 
     @Test
@@ -94,13 +96,13 @@ public class FlightRepositoryTest extends RepositoryTest {
                 pageable
         );
 
-        List<Long> listOfId = actualPage.getContent().stream().map(Flight::getId).toList();
-
-        assertEquals(2, actualPage.getContent().size());
-        assertAll(
-                () -> assertTrue(listOfId.contains(flight1.getId())),
-                () -> assertTrue(listOfId.contains(flight2.getId()))
-        );
+        assertThat(actualPage.getContent())
+                .hasSize(2)
+                .extracting(Flight::getId)
+                .containsExactly(
+                        flight1.getId(),
+                        flight2.getId()
+                );
     }
 
     @Test
@@ -124,13 +126,13 @@ public class FlightRepositoryTest extends RepositoryTest {
                 pageable
         );
 
-        List<Long> listOfId = actualPage.getContent().stream().map(Flight::getId).toList();
-
-        assertEquals(2, actualPage.getContent().size());
-        assertAll(
-                () -> assertTrue(listOfId.contains(flight1.getId())),
-                () -> assertTrue(listOfId.contains(flight3.getId()))
-        );
+        assertThat(actualPage.getContent())
+                .hasSize(2)
+                .extracting(Flight::getId)
+                .containsExactly(
+                        flight1.getId(),
+                        flight3.getId()
+                );
     }
 
     @Test
@@ -154,14 +156,14 @@ public class FlightRepositoryTest extends RepositoryTest {
                 pageable
         );
 
-        List<Long> listOfId = actualPage.getContent().stream().map(Flight::getId).toList();
-
-        assertEquals(3, actualPage.getContent().size());
-        assertAll(
-                () -> assertTrue(listOfId.contains(flight1.getId())),
-                () -> assertTrue(listOfId.contains(flight2.getId())),
-                () -> assertTrue(listOfId.contains(flight3.getId()))
-        );
+        assertThat(actualPage.getContent())
+                .hasSize(3)
+                .extracting(Flight::getId)
+                .containsExactly(
+                        flight1.getId(),
+                        flight2.getId(),
+                        flight3.getId()
+                );
     }
 
     @Test
@@ -177,8 +179,8 @@ public class FlightRepositoryTest extends RepositoryTest {
 
         Flight actualFlight = flightRepository.findByFlightNumber(flight.getFlightNumber()).orElseThrow();
 
-        assertEquals(flight.getId(), actualFlight.getId());
-        assertTrue(Hibernate.isInitialized(actualFlight.getSeats()));
+        assertThat(actualFlight.getId()).isEqualTo(flight.getId());
+        assertThat(Hibernate.isInitialized(actualFlight.getSeats())).isTrue();
     }
 
     @Test
@@ -186,7 +188,7 @@ public class FlightRepositoryTest extends RepositoryTest {
     void shouldReturnEmptyOptionalWhenFlightNumberDoesNotExist() {
         Optional<Flight> actualFlight = flightRepository.findByFlightNumber("someNumber");
 
-        assertTrue(actualFlight.isEmpty());
+        assertThat(actualFlight).isEmpty();
     }
 
     @Test
@@ -194,9 +196,9 @@ public class FlightRepositoryTest extends RepositoryTest {
     void shouldReturnCountSeats() {
         Flight flight = TestDataFactory.createFlight();
 
-        Seat availableSeat = TestDataFactory.createSeat(flight, "1S",SeatStatus.AVAILABLE);
-        Seat reservedSeat = TestDataFactory.createSeat(flight, "2S",SeatStatus.RESERVED);
-        Seat soldSeat = TestDataFactory.createSeat(flight, "3S",SeatStatus.SOLD);
+        Seat availableSeat = TestDataFactory.createSeat(flight, "1S", SeatStatus.AVAILABLE);
+        Seat reservedSeat = TestDataFactory.createSeat(flight, "2S", SeatStatus.RESERVED);
+        Seat soldSeat = TestDataFactory.createSeat(flight, "3S", SeatStatus.SOLD);
 
         testEntityManager.persist(flight);
         testEntityManager.persist(availableSeat);
@@ -206,6 +208,16 @@ public class FlightRepositoryTest extends RepositoryTest {
         testEntityManager.clear();
 
         SeatCountsResponse countsResponse = flightRepository.findCountSeats(flight.getId());
+
+        assertThat(countsResponse)
+                .extracting(
+                        SeatCountsResponse::getAvailableSeats,
+                        SeatCountsResponse::getTotalSeats
+                )
+                .containsExactly(
+                        1L,
+                        3L
+                );
 
         assertEquals(1, countsResponse.getAvailableSeats());
         assertEquals(3, countsResponse.getTotalSeats());

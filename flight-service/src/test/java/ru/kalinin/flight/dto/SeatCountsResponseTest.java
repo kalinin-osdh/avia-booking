@@ -11,7 +11,6 @@ public class SeatCountsResponseTest implements SeatCountsResponse {
         this.availableSeats = availableSeats;
     }
 
-
     @Override
     public Long getTotalSeats() {
         return totalSeats;

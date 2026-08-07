@@ -12,7 +12,7 @@ import ru.kalinin.flight.entity.Seat;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("seat-repository")
 public class SeatRepositoryTest extends RepositoryTest {
@@ -36,8 +36,10 @@ public class SeatRepositoryTest extends RepositoryTest {
 
         List<Seat> actualSeats = seatRepository.findSeatsByFlight(flight);
 
-        assertEquals(1, actualSeats.size());
-        assertEquals(seat.getId(), actualSeats.get(0).getId());
+        assertThat(actualSeats)
+                .hasSize(1)
+                .extracting(Seat::getId)
+                .containsExactly(seat.getId());
     }
 
     @Test
@@ -51,7 +53,7 @@ public class SeatRepositoryTest extends RepositoryTest {
 
         List<Seat> actualSeats = seatRepository.findSeatsByFlight(flight);
 
-        assertTrue(actualSeats.isEmpty());
+        assertThat(actualSeats).isEmpty();
     }
 
     @Test
@@ -67,11 +69,16 @@ public class SeatRepositoryTest extends RepositoryTest {
 
         Seat actualSeat = seatRepository.findByIdWithFlight(seat.getId()).orElseThrow();
 
-        assertAll(
-                () -> assertEquals(seat.getId(), actualSeat.getId()),
-                () -> assertEquals(flight.getFlightNumber(), actualSeat.getFlight().getFlightNumber()),
-                () -> assertTrue(Hibernate.isInitialized(actualSeat.getFlight()))
-        );
+        assertThat(actualSeat)
+                .extracting(
+                        Seat::getId,
+                        s -> s.getFlight().getFlightNumber()
+                ).containsExactly(
+                        seat.getId(),
+                        flight.getFlightNumber()
+                );
+
+        assertThat(Hibernate.isInitialized(actualSeat.getFlight())).isTrue();
     }
 
     @Test
@@ -79,6 +86,6 @@ public class SeatRepositoryTest extends RepositoryTest {
     void shouldReturnEmptyOptionalWhenSeatDoesNotExist() {
         Optional<Seat> actualSeat = seatRepository.findByIdWithFlight(Long.MAX_VALUE);
 
-        assertTrue(actualSeat.isEmpty());
+        assertThat(actualSeat).isEmpty();
     }
 }
