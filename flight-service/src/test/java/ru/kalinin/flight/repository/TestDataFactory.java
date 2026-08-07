@@ -16,6 +16,10 @@ public final class TestDataFactory {
         return createFlight("1A", "MOSCOW", "SOCHI");
     }
 
+    public static Flight createFlight(String flightNumber) {
+        return createFlight(flightNumber, "MOSCOW", "SOCHI");
+    }
+
     public static Flight createFlight(String flightNumber, String departureCity, String arrivalCity) {
         return Flight.builder()
                 .flightNumber(flightNumber)
