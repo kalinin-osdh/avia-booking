@@ -24,7 +24,6 @@ public class BookingServiceSecurityConfig extends BaseSecurityConfig {
         configureCommon(http, jwtAuthFilter, authenticationEntryPoint, accessDeniedHandler);
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/admin/booking/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/booking/**").authenticated()
                 );
         return http.build();
