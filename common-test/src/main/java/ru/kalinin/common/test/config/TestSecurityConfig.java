@@ -1,20 +1,21 @@
 package ru.kalinin.common.test.config;
 
 
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.SecurityFilterChain;
+import ru.kalinin.common.security.handler.CustomAccessDeniedHandler;
+import ru.kalinin.common.security.handler.CustomAuthenticationEntryPoint;
 
 @EnableWebSecurity
+@Import({CustomAuthenticationEntryPoint.class, CustomAccessDeniedHandler.class})
 public class TestSecurityConfig {
-
-    @Bean
-    SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
-
-        return http
+    protected void configureCommon(HttpSecurity http,
+                                   CustomAuthenticationEntryPoint authenticationEntryPoint,
+                                   CustomAccessDeniedHandler accessDeniedHandler) throws Exception {
+        http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
@@ -22,12 +23,9 @@ public class TestSecurityConfig {
                                 SessionCreationPolicy.STATELESS
                         )
                 )
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/logout").authenticated() // auth-service
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN") // flight-service
-                        .requestMatchers("/api/v1/booking/**").authenticated() // booking-service
-                        .anyRequest().permitAll()
-                )
-                .build();
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                );
     }
 }

@@ -12,10 +12,10 @@ import ru.kalinin.common.security.dto.JwtUserPrincipal;
 import java.util.Collection;
 import java.util.Collections;
 
-public class WithMockJwtUserSecurityContextFactory implements WithSecurityContextFactory<MockWithJwtUser> {
+public class WithMockJwtUserSecurityContextFactory implements WithSecurityContextFactory<WithMockJwtUser> {
 
     @Override
-    public SecurityContext createSecurityContext(MockWithJwtUser annotation) {
+    public SecurityContext createSecurityContext(WithMockJwtUser annotation) {
         JwtUserPrincipal principal = new JwtUserPrincipal(
                 annotation.id(),
                 annotation.username()

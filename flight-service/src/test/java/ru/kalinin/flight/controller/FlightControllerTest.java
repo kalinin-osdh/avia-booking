@@ -11,10 +11,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.kalinin.common.exception.GlobalExceptionHandler;
 import ru.kalinin.common.exception.flights.FlightNotFoundException;
-import ru.kalinin.common.test.config.MockWithJwtUser;
 import ru.kalinin.common.test.config.TestSecurityConfig;
+import ru.kalinin.flight.config.FlightTestSecurityConfig;
 import ru.kalinin.flight.dto.request.FlightPageRequest;
-import ru.kalinin.flight.dto.response.FlightAdminPageResponse;
 import ru.kalinin.flight.dto.response.FlightWithOutSeatsResponse;
 import ru.kalinin.flight.dto.response.FlightWithSeatsResponse;
 import ru.kalinin.flight.dto.response.PageResponse;
@@ -32,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(FlightController.class)
-@Import({TestSecurityConfig.class, GlobalExceptionHandler.class})
+@Import({FlightTestSecurityConfig.class, GlobalExceptionHandler.class})
 @Tag("controller")
 class FlightControllerTest {
 
@@ -83,7 +82,7 @@ class FlightControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/v1/admin/flights/{flightNumber} - 200 Получить данные о полете по номеру")
+    @DisplayName("GET /api/v1/flights/{flightNumber} - 200 Получить данные о полете по номеру")
     void shouldFindFlightByFlightNumber() throws Exception {
         FlightWithSeatsResponse response = FlightWithSeatsResponse.builder()
                 .flightNumber("10A")

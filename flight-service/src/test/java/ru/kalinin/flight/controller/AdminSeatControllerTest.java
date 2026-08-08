@@ -11,8 +11,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.kalinin.common.test.config.MockWithJwtUser;
+import ru.kalinin.common.test.config.WithMockJwtUser;
 import ru.kalinin.common.test.config.TestSecurityConfig;
+import ru.kalinin.flight.config.FlightTestSecurityConfig;
 import ru.kalinin.flight.dto.request.SeatRequest;
 import ru.kalinin.flight.dto.response.SeatAdminResponse;
 import ru.kalinin.flight.entity.enums.SeatStatus;
@@ -28,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AdminSeatController.class)
-@Import(TestSecurityConfig.class)
+@Import(FlightTestSecurityConfig.class)
 @Tag("controller")
 class AdminSeatControllerTest {
 
@@ -65,7 +66,7 @@ class AdminSeatControllerTest {
 
     @Test
     @DisplayName("GET /api/v1/admin/seats/flight/{id} - 200 Получить список мест полета по его ID")
-    @MockWithJwtUser(role = "ADMIN")
+    @WithMockJwtUser(role = "ADMIN")
     void shouldFindSeatsByFlightId() throws Exception {
         when(service.findByFlightId(17L)).thenReturn(responses);
 
@@ -81,7 +82,7 @@ class AdminSeatControllerTest {
 
     @Test
     @DisplayName("POST /api/v1/admin/seats - 201 Создать место")
-    @MockWithJwtUser(role = "ADMIN")
+    @WithMockJwtUser(role = "ADMIN")
     void shouldCreateSeat() throws Exception {
         SeatRequest request = new SeatRequest(
                 17L,
@@ -102,7 +103,7 @@ class AdminSeatControllerTest {
 
     @Test
     @DisplayName("PUT /api/v1/admin/seats/{id} - 200 Обновить место")
-    @MockWithJwtUser(role = "ADMIN")
+    @WithMockJwtUser(role = "ADMIN")
     void shouldUpdateSeat() throws Exception {
         SeatRequest request = new SeatRequest(
                 17L,
@@ -133,7 +134,7 @@ class AdminSeatControllerTest {
 
     @Test
     @DisplayName("DELETE /api/v1/admin/seats/{id} - 204 Удалить место")
-    @MockWithJwtUser(role = "ADMIN")
+    @WithMockJwtUser(role = "ADMIN")
     void shouldDeleteSeat() throws Exception {
         doNothing().when(service).delete(2L);
 

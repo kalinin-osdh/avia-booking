@@ -14,8 +14,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.kalinin.common.exception.GlobalExceptionHandler;
 import ru.kalinin.common.exception.flights.FlightNotFoundException;
-import ru.kalinin.common.test.config.MockWithJwtUser;
+import ru.kalinin.common.test.config.WithMockJwtUser;
 import ru.kalinin.common.test.config.TestSecurityConfig;
+import ru.kalinin.flight.config.FlightTestSecurityConfig;
 import ru.kalinin.flight.dto.request.FlightPageRequest;
 import ru.kalinin.flight.dto.request.FlightRequest;
 import ru.kalinin.flight.dto.request.FlightUpdateRequest;
@@ -37,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(AdminFlightController.class)
-@Import({TestSecurityConfig.class, GlobalExceptionHandler.class})
+@Import({FlightTestSecurityConfig.class, GlobalExceptionHandler.class})
 @Tag("controller")
 class AdminFlightControllerTest {
 
@@ -52,7 +53,7 @@ class AdminFlightControllerTest {
 
     @Test
     @DisplayName("GET /api/v1/admin/flights - 200 Получить список всех полетов с фильтрами (пагинация)")
-    @MockWithJwtUser(role = "ADMIN")
+    @WithMockJwtUser(role = "ADMIN")
     void shouldFindAllFlights() throws Exception {
         PageResponse<FlightAdminPageResponse> pageResponse =
                 PageResponse.<FlightAdminPageResponse>builder()
@@ -97,7 +98,7 @@ class AdminFlightControllerTest {
 
     @Test
     @DisplayName("GET /api/v1/admin/flights - 200 Получить список всех полетов (пагинация)")
-    @MockWithJwtUser(role = "ADMIN")
+    @WithMockJwtUser(role = "ADMIN")
     void shouldFindAllFlightsWithDefaultPageSettings() throws Exception {
         PageResponse<FlightAdminPageResponse> pageResponse =
                 PageResponse.<FlightAdminPageResponse>builder()
@@ -136,7 +137,7 @@ class AdminFlightControllerTest {
 
     @Test
     @DisplayName("GET /api/v1/admin/flights/{id} - 200 Получить полет по ID")
-    @MockWithJwtUser(role = "ADMIN")
+    @WithMockJwtUser(role = "ADMIN")
     void shouldFindFlightById() throws Exception {
         FlightAdminResponse response = FlightAdminResponse.builder()
                 .id(10L)
@@ -165,7 +166,7 @@ class AdminFlightControllerTest {
 
     @Test
     @DisplayName("GET /api/v1/admin/flights/{id} - 404 Not found. Полет не найден по ID")
-    @MockWithJwtUser(role = "ADMIN")
+    @WithMockJwtUser(role = "ADMIN")
     void shouldThrowFlightNotFoundException() throws Exception {
         when(service.findById(100L)).thenThrow(
                 new FlightNotFoundException(100L)
@@ -181,7 +182,7 @@ class AdminFlightControllerTest {
 
     @Test
     @DisplayName("POST /api/v1/admin/flights - 201 Создать полет")
-    @MockWithJwtUser(role = "ADMIN")
+    @WithMockJwtUser(role = "ADMIN")
     void shouldCreateFlight() throws Exception{
         FlightRequest request = FlightRequest.builder()
                 .flightNumber("10A")
@@ -218,7 +219,7 @@ class AdminFlightControllerTest {
 
     @Test
     @DisplayName("PUT /api/v1/admin/flights/{id} - 200 Обновить данные о полете")
-    @MockWithJwtUser(role = "ADMIN")
+    @WithMockJwtUser(role = "ADMIN")
     void shouldUpdateFlight() throws Exception{
         FlightUpdateRequest request = FlightUpdateRequest.builder()
                 .departureCity("MOSCOW")
@@ -254,7 +255,7 @@ class AdminFlightControllerTest {
 
     @Test
     @DisplayName("DELETE /api/v1/admin/flights/{id} - 204 Удаление полета")
-    @MockWithJwtUser(role = "ADMIN")
+    @WithMockJwtUser(role = "ADMIN")
     void shouldDeleteFlight() throws Exception {
         doNothing().when(service).delete(10L);
 

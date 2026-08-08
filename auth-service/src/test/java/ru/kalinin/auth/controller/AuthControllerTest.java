@@ -12,12 +12,12 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.kalinin.auth.config.AuthTestSecurityConfig;
 import ru.kalinin.auth.dto.request.AuthRequest;
 import ru.kalinin.auth.dto.request.RefreshRequest;
 import ru.kalinin.auth.dto.response.AuthResponse;
 import ru.kalinin.auth.service.interfaces.AuthService;
-import ru.kalinin.common.test.config.MockWithJwtUser;
-import ru.kalinin.common.test.config.TestSecurityConfig;
+import ru.kalinin.common.test.config.WithMockJwtUser;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AuthController.class)
-@Import(TestSecurityConfig.class)
+@Import(AuthTestSecurityConfig.class)
 @Tag("controller")
 public class AuthControllerTest {
 
@@ -123,7 +123,7 @@ public class AuthControllerTest {
 
     @Test
     @DisplayName("POST /api/v1/auth/logout - 200 Успешный выход из аккаунта")
-    @MockWithJwtUser(username = "admin")
+    @WithMockJwtUser(username = "admin")
     void shouldLogout() throws Exception {
         mockMvc.perform(post("/api/v1/auth/logout"))
                 .andExpect(status().isOk());
