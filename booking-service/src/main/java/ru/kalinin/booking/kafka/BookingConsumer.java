@@ -5,7 +5,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import ru.kalinin.booking.entity.Booking;
 import ru.kalinin.booking.service.interfaces.BookingService;
-import ru.kalinin.common.kafka.event.EventMetadata;
 import ru.kalinin.common.kafka.event.booking.BookingPaymentFailedEvent;
 import ru.kalinin.common.kafka.event.booking.BookingPaymentSuccessfulEvent;
 import ru.kalinin.common.kafka.event.payment.PaymentCreatedEvent;
@@ -63,7 +62,7 @@ public class BookingConsumer {
     @KafkaListener(
             topics = KafkaTopics.PAYMENT_FAILED
     )
-    public void paymentSuccessListener(PaymentFailedEvent event) {
+    public void paymentFailListener(PaymentFailedEvent event) {
         bookingService.failPayment(event.bookingNumber());
 
         Booking booking = bookingService.getByBookingNumber(event.bookingNumber());

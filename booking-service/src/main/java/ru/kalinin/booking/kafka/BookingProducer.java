@@ -14,28 +14,28 @@ import ru.kalinin.common.kafka.topics.KafkaTopics;
 public class BookingProducer {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public void sendBookingCreated(BookingCreatedEvent event){
+    public void sendBookingCreated(BookingCreatedEvent event) {
         kafkaTemplate.send(
                 KafkaTopics.BOOKING_CREATED,
                 event
         );
     }
 
-    public void sendPaymentCreated(PaymentCreatedEvent event){
+    public void sendPaymentCreated(PaymentCreatedEvent event) {
         kafkaTemplate.send(
                 KafkaTopics.PAYMENT_CREATED,
                 event
         );
     }
 
-    public void sendPaymentSuccess(BookingPaymentSuccessfulEvent event){
+    public void sendPaymentSuccess(BookingPaymentSuccessfulEvent event) {
         kafkaTemplate.send(
-            KafkaTopics.BOOKING_PAYMENT_SUCCESSFUL,
-            event
+                KafkaTopics.BOOKING_PAYMENT_SUCCESSFUL,
+                event
         );
     }
 
-    public void sendPaymentFailed(BookingPaymentFailedEvent event){
+    public void sendPaymentFailed(BookingPaymentFailedEvent event) {
         kafkaTemplate.send(
                 KafkaTopics.BOOKING_PAYMENT_FAILED,
                 event
