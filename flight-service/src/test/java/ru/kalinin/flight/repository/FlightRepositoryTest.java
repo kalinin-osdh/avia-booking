@@ -13,6 +13,7 @@ import ru.kalinin.flight.dto.response.SeatCountsResponse;
 import ru.kalinin.flight.entity.Flight;
 import ru.kalinin.flight.entity.Seat;
 import ru.kalinin.flight.entity.enums.SeatStatus;
+import ru.kalinin.flight.factory.TestDataFactory;
 
 import java.util.Optional;
 

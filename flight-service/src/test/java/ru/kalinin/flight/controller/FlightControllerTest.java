@@ -11,7 +11,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.kalinin.common.exception.GlobalExceptionHandler;
 import ru.kalinin.common.exception.flights.FlightNotFoundException;
-import ru.kalinin.common.test.config.TestSecurityConfig;
 import ru.kalinin.flight.config.FlightTestSecurityConfig;
 import ru.kalinin.flight.dto.request.FlightPageRequest;
 import ru.kalinin.flight.dto.response.FlightWithOutSeatsResponse;
@@ -22,7 +21,7 @@ import ru.kalinin.flight.service.interfaces.FlightService;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -95,7 +94,7 @@ class FlightControllerTest {
                 .seats(List.of())
                 .build();
 
-        when(service.findByFlightNumber("10A",null)).thenReturn(response);
+        when(service.findByFlightNumber("10A", null)).thenReturn(response);
 
         mockMvc.perform(get("/api/v1/flights/{flightNumber}", "10A"))
                 .andExpect(status().isOk())

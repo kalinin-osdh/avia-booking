@@ -22,7 +22,7 @@ import ru.kalinin.flight.dto.response.SeatResponse;
 import ru.kalinin.flight.entity.Flight;
 import ru.kalinin.flight.entity.enums.SeatStatus;
 import ru.kalinin.flight.repository.FlightRepository;
-import ru.kalinin.flight.repository.TestDataFactory;
+import ru.kalinin.flight.factory.TestDataFactory;
 import ru.kalinin.flight.service.interfaces.AdminFlightService;
 import ru.kalinin.flight.service.interfaces.FlightService;
 

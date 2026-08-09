@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import ru.kalinin.flight.entity.Flight;
 import ru.kalinin.flight.entity.Seat;
+import ru.kalinin.flight.factory.TestDataFactory;
 
 import java.util.List;
 import java.util.Optional;

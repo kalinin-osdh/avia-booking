@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.kalinin.common.exception.GlobalExceptionHandler;
 import ru.kalinin.common.exception.flights.FlightNotFoundException;
 import ru.kalinin.common.test.config.WithMockJwtUser;
-import ru.kalinin.common.test.config.TestSecurityConfig;
 import ru.kalinin.flight.config.FlightTestSecurityConfig;
 import ru.kalinin.flight.dto.request.FlightPageRequest;
 import ru.kalinin.flight.dto.request.FlightRequest;
@@ -183,7 +182,7 @@ class AdminFlightControllerTest {
     @Test
     @DisplayName("POST /api/v1/admin/flights - 201 Создать полет")
     @WithMockJwtUser(role = "ADMIN")
-    void shouldCreateFlight() throws Exception{
+    void shouldCreateFlight() throws Exception {
         FlightRequest request = FlightRequest.builder()
                 .flightNumber("10A")
                 .departureCity("MOSCOW")
@@ -207,8 +206,8 @@ class AdminFlightControllerTest {
         when(service.create(any(FlightRequest.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/v1/admin/flights")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.flightNumber").value("10A"))
                 .andExpect(jsonPath("$.departureCity").value("MOSCOW"))
@@ -220,7 +219,7 @@ class AdminFlightControllerTest {
     @Test
     @DisplayName("PUT /api/v1/admin/flights/{id} - 200 Обновить данные о полете")
     @WithMockJwtUser(role = "ADMIN")
-    void shouldUpdateFlight() throws Exception{
+    void shouldUpdateFlight() throws Exception {
         FlightUpdateRequest request = FlightUpdateRequest.builder()
                 .departureCity("MOSCOW")
                 .arrivalCity("ST. PETERSBURG")

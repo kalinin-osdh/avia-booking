@@ -1,4 +1,4 @@
-package ru.kalinin.flight.repository;
+package ru.kalinin.flight.factory;
 
 import ru.kalinin.flight.entity.Flight;
 import ru.kalinin.flight.entity.Seat;

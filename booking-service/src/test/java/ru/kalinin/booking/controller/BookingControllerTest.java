@@ -14,14 +14,13 @@ import ru.kalinin.booking.config.BookingTestSecurityConfig;
 import ru.kalinin.booking.dto.request.BookingRequest;
 import ru.kalinin.booking.dto.response.BookingResponse;
 import ru.kalinin.booking.entity.enums.BookingStatus;
+import ru.kalinin.booking.factory.TestDataFactory;
 import ru.kalinin.booking.service.interfaces.BookingService;
 import ru.kalinin.common.exception.ExceptionAutoConfiguration;
 import ru.kalinin.common.test.config.WithMockJwtUser;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -47,19 +46,9 @@ public class BookingControllerTest {
     @DisplayName("Должен создать бронь для аутентифицированного пользователя")
     @WithMockJwtUser(username = "kalinin", role = "USER")
     void shouldBookFlightSeat() throws Exception {
-        BookingRequest request = BookingRequest.builder()
-                .flightNumber("1A")
-                .seatNumber("1S")
-                .build();
+        BookingRequest request = TestDataFactory.createBookingRequest("1A", "1S");
 
-        BookingResponse response = BookingResponse.builder()
-                .bookingNumber(UUID.randomUUID())
-                .flightNumber("1A")
-                .seatNumber("1S")
-                .price(BigDecimal.valueOf(1000))
-                .status(BookingStatus.CREATED)
-                .createdAt(LocalDateTime.now())
-                .build();
+        BookingResponse response = TestDataFactory.createBookingResponse(request);
 
         when(service.booking(eq("kalinin"), any(BookingRequest.class))).thenReturn(response);
 
@@ -85,10 +74,7 @@ public class BookingControllerTest {
     @Test
     @DisplayName("Должен вернуть 401 Unauthorized при попытке забронировать место без аутентификации")
     void shouldReturnUnauthorizedWhenBookFlightSeat() throws Exception {
-        BookingRequest request = BookingRequest.builder()
-                .flightNumber("1A")
-                .seatNumber("1S")
-                .build();
+        BookingRequest request = TestDataFactory.createBookingRequest("1A", "1S");
 
         mockMvc.perform(post("/api/v1/booking")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -104,10 +90,7 @@ public class BookingControllerTest {
     @DisplayName("Должен вернуть 400 BadRequest при ошибке валидации данных")
     @WithMockJwtUser(role = "USER")
     void shouldReturnBadRequestWhenBookFlightSeat() throws Exception {
-        BookingRequest request = BookingRequest.builder()
-                .flightNumber("")
-                .seatNumber("1S")
-                .build();
+        BookingRequest request = TestDataFactory.createBookingRequest("", "1S");
 
         mockMvc.perform(post("/api/v1/booking")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -124,22 +107,8 @@ public class BookingControllerTest {
     @WithMockJwtUser(role = "USER")
     void shouldReturnBookingHistoryForAuthUser() throws Exception {
         List<BookingResponse> responses = List.of(
-                BookingResponse.builder()
-                        .bookingNumber(UUID.randomUUID())
-                        .flightNumber("1A")
-                        .seatNumber("1S")
-                        .price(BigDecimal.valueOf(1000))
-                        .status(BookingStatus.CREATED)
-                        .createdAt(LocalDateTime.now())
-                        .build(),
-                BookingResponse.builder()
-                        .bookingNumber(UUID.randomUUID())
-                        .flightNumber("1B")
-                        .seatNumber("1S")
-                        .price(BigDecimal.valueOf(2500))
-                        .status(BookingStatus.CONFIRMED)
-                        .createdAt(LocalDateTime.now())
-                        .build()
+                TestDataFactory.createBookingResponse("1A", "1S", BigDecimal.valueOf(1000), BookingStatus.CREATED),
+                TestDataFactory.createBookingResponse("1B", "1S", BigDecimal.valueOf(1000), BookingStatus.CREATED)
         );
 
 

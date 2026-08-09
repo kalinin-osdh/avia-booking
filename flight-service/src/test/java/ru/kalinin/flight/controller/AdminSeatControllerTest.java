@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.kalinin.common.test.config.WithMockJwtUser;
-import ru.kalinin.common.test.config.TestSecurityConfig;
 import ru.kalinin.flight.config.FlightTestSecurityConfig;
 import ru.kalinin.flight.dto.request.SeatRequest;
 import ru.kalinin.flight.dto.response.SeatAdminResponse;
@@ -138,7 +137,7 @@ class AdminSeatControllerTest {
     void shouldDeleteSeat() throws Exception {
         doNothing().when(service).delete(2L);
 
-        mockMvc.perform(delete("/api/v1/admin/seats/{id}",2L))
+        mockMvc.perform(delete("/api/v1/admin/seats/{id}", 2L))
                 .andExpect(status().isNoContent());
 
         verify(service, times(1)).delete(2L);
