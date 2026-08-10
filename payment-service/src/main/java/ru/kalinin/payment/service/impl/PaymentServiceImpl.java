@@ -52,16 +52,18 @@ public class PaymentServiceImpl implements PaymentService {
         if (!Objects.equals(username, payment.getUsername()))
             throw new PaymentUserNotEqualsException(username, bookingNumber);
 
-        payment.setStatus(PaymentStatus.SUCCESS);
+        if (payment.getStatus().equals(PaymentStatus.PENDING)){
+            payment.setStatus(PaymentStatus.SUCCESS);
 
-        paymentProducer.sendPaymentSuccess(
-                PaymentSuccessfulEvent.of(
-                        payment.getBookingNumber(),
-                        payment.getPaymentNumber(),
-                        payment.getUsername(),
-                        payment.getPrice()
-                )
-        );
+            paymentProducer.sendPaymentSuccess(
+                    PaymentSuccessfulEvent.of(
+                            payment.getBookingNumber(),
+                            payment.getPaymentNumber(),
+                            payment.getUsername(),
+                            payment.getPrice()
+                    )
+            );
+        }
 
         return paymentMapper.toResponse(payment);
     }
@@ -77,17 +79,19 @@ public class PaymentServiceImpl implements PaymentService {
         if (!Objects.equals(username, payment.getUsername()))
             throw new PaymentUserNotEqualsException(username, bookingNumber);
 
-        payment.setStatus(PaymentStatus.FAILED);
+        if(payment.getStatus().equals(PaymentStatus.PENDING)){
+            payment.setStatus(PaymentStatus.FAILED);
 
-        paymentProducer.sendPaymentFailed(
-                PaymentFailedEvent.of(
-                        payment.getBookingNumber(),
-                        payment.getPaymentNumber(),
-                        payment.getUsername(),
-                        payment.getPrice(),
-                        "Ошибка при оплате."
-                )
-        );
+            paymentProducer.sendPaymentFailed(
+                    PaymentFailedEvent.of(
+                            payment.getBookingNumber(),
+                            payment.getPaymentNumber(),
+                            payment.getUsername(),
+                            payment.getPrice(),
+                            "Ошибка при оплате."
+                    )
+            );
+        }
 
         return paymentMapper.toResponse(payment);
     }

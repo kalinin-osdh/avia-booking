@@ -15,13 +15,13 @@ public interface BookingService {
 
     List<BookingResponse> getUserHistory(String username);
 
-    void confirmBooking(Long id, BigDecimal price);
+    boolean confirmBooking(Long id, BigDecimal price);
 
-    void declineBooking(Long id);
+    boolean declineBooking(Long id);
 
-    void successPayment(UUID bookingNumber);
+    boolean successPayment(UUID bookingNumber);
 
-    void failPayment(UUID bookingNumber);
+    boolean failPayment(UUID bookingNumber);
 
     Booking getById(Long id);
 

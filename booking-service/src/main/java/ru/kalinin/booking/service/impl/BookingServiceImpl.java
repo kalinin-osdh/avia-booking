@@ -51,44 +51,48 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void confirmBooking(Long id, BigDecimal price) {
+    public boolean confirmBooking(Long id, BigDecimal price) {
         Booking booking = getById(id);
 
-        if (booking.getStatus() == BookingStatus.CONFIRMED)
-            return;
+        if (booking.getStatus() != BookingStatus.CREATED)
+            return false;
 
         booking.setStatus(BookingStatus.CONFIRMED);
         booking.setPrice(price);
+        return true;
     }
 
     @Override
-    public void declineBooking(Long id) {
+    public boolean declineBooking(Long id) {
         Booking booking = getById(id);
 
-        if (booking.getStatus() == BookingStatus.DECLINED)
-            return;
+        if (booking.getStatus() != BookingStatus.CREATED)
+            return false;
 
         booking.setStatus(BookingStatus.DECLINED);
+        return true;
     }
 
     @Override
-    public void successPayment(UUID bookingNumber) {
+    public boolean successPayment(UUID bookingNumber) {
         Booking booking = getByBookingNumber(bookingNumber);
 
-        if (booking.getStatus() == BookingStatus.PAYMENT_SUCCESS)
-            return;
+        if (booking.getStatus() != BookingStatus.CONFIRMED)
+            return false;
 
         booking.setStatus(BookingStatus.PAYMENT_SUCCESS);
+        return true;
     }
 
     @Override
-    public void failPayment(UUID bookingNumber) {
+    public boolean failPayment(UUID bookingNumber) {
         Booking booking = getByBookingNumber(bookingNumber);
 
-        if (booking.getStatus() == BookingStatus.PAYMENT_FAILED)
-            return;
+        if (booking.getStatus() != BookingStatus.CONFIRMED)
+            return false;
 
         booking.setStatus(BookingStatus.PAYMENT_FAILED);
+        return true;
     }
 
 

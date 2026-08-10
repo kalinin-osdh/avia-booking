@@ -24,15 +24,17 @@ public class BookingConsumer {
             topics = KafkaTopics.SEAT_RESERVED
     )
     public void seatReservedListener(SeatReservedEvent event) {
-        bookingService.confirmBooking(event.bookingId(), event.price());
+        boolean condition = bookingService.confirmBooking(event.bookingId(), event.price());
 
-        bookingProducer.sendPaymentCreated(
-                PaymentCreatedEvent.of(
-                        event.bookingNumber(),
-                        event.username(),
-                        event.price()
-                )
-        );
+        if (condition) {
+            bookingProducer.sendPaymentCreated(
+                    PaymentCreatedEvent.of(
+                            event.bookingNumber(),
+                            event.username(),
+                            event.price()
+                    )
+            );
+        }
     }
 
     @KafkaListener(
@@ -46,35 +48,39 @@ public class BookingConsumer {
             topics = KafkaTopics.PAYMENT_SUCCESSFUL
     )
     public void paymentSuccessListener(PaymentSuccessfulEvent event) {
-        bookingService.successPayment(event.bookingNumber());
+        boolean condition = bookingService.successPayment(event.bookingNumber());
 
-        Booking booking = bookingService.getByBookingNumber(event.bookingNumber());
+        if (condition) {
+            Booking booking = bookingService.getByBookingNumber(event.bookingNumber());
 
-        bookingProducer.sendPaymentSuccess(
-                BookingPaymentSuccessfulEvent.of(
-                        booking.getBookingNumber(),
-                        booking.getFlightNumber(),
-                        booking.getSeatNumber()
-                )
-        );
+            bookingProducer.sendPaymentSuccess(
+                    BookingPaymentSuccessfulEvent.of(
+                            booking.getBookingNumber(),
+                            booking.getFlightNumber(),
+                            booking.getSeatNumber()
+                    )
+            );
+        }
     }
 
     @KafkaListener(
             topics = KafkaTopics.PAYMENT_FAILED
     )
     public void paymentFailListener(PaymentFailedEvent event) {
-        bookingService.failPayment(event.bookingNumber());
+        boolean condition = bookingService.failPayment(event.bookingNumber());
 
-        Booking booking = bookingService.getByBookingNumber(event.bookingNumber());
+        if (condition) {
+            Booking booking = bookingService.getByBookingNumber(event.bookingNumber());
 
-        bookingProducer.sendPaymentFailed(
-                BookingPaymentFailedEvent.of(
-                        booking.getBookingNumber(),
-                        booking.getFlightNumber(),
-                        booking.getSeatNumber(),
-                        event.reason()
-                )
-        );
+            bookingProducer.sendPaymentFailed(
+                    BookingPaymentFailedEvent.of(
+                            booking.getBookingNumber(),
+                            booking.getFlightNumber(),
+                            booking.getSeatNumber(),
+                            event.reason()
+                    )
+            );
+        }
     }
 }
 
