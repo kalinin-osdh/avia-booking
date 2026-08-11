@@ -48,6 +48,8 @@ public class BookingConsumerTest {
                 BigDecimal.valueOf(1000)
         );
 
+        when(bookingService.confirmBooking(event.bookingId(), event.price())).thenReturn(true);
+
         bookingConsumer.seatReservedListener(event);
 
         ArgumentCaptor<PaymentCreatedEvent> captor = ArgumentCaptor.forClass(PaymentCreatedEvent.class);
@@ -98,6 +100,7 @@ public class BookingConsumerTest {
 
         Booking booking = TestDataFactory.createBooking(1L, "1A", "1S");
 
+        when(bookingService.successPayment(event.bookingNumber())).thenReturn(true);
         when(bookingService.getByBookingNumber(event.bookingNumber())).thenReturn(booking);
 
         bookingConsumer.paymentSuccessListener(event);
@@ -137,6 +140,7 @@ public class BookingConsumerTest {
 
         Booking booking = TestDataFactory.createBooking(1L, "1A", "1S");
 
+        when(bookingService.failPayment(event.bookingNumber())).thenReturn(true);
         when(bookingService.getByBookingNumber(event.bookingNumber())).thenReturn(booking);
 
         bookingConsumer.paymentFailListener(event);

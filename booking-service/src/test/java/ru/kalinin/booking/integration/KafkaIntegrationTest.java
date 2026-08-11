@@ -3,6 +3,7 @@ package ru.kalinin.booking.integration;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,24 +16,30 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.kafka.KafkaContainer;
 import ru.kalinin.booking.entity.Booking;
 import ru.kalinin.booking.entity.enums.BookingStatus;
+import ru.kalinin.booking.kafka.BookingProducer;
 import ru.kalinin.booking.repository.BookingRepository;
 import ru.kalinin.common.kafka.event.payment.PaymentCreatedEvent;
 import ru.kalinin.common.kafka.event.seat.SeatReservedEvent;
 import ru.kalinin.common.kafka.topics.KafkaTopics;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @Testcontainers
@@ -46,6 +53,9 @@ public class KafkaIntegrationTest {
 
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
+
+    @MockitoSpyBean
+    private BookingProducer bookingProducer;
 
     @Container
     static KafkaContainer kafka = new KafkaContainer("apache/kafka-native:3.8.0");
@@ -100,6 +110,7 @@ public class KafkaIntegrationTest {
 
         try (Consumer<String, PaymentCreatedEvent> consumer = createConsumer()) {
             consumer.subscribe(List.of(KafkaTopics.PAYMENT_CREATED));
+            consumer.poll(Duration.ofMillis(500));
 
             kafkaTemplate.send(KafkaTopics.SEAT_RESERVED, event).get();
 
@@ -123,23 +134,79 @@ public class KafkaIntegrationTest {
 
         Booking actualBooking = bookingRepository.findById(booking.getId()).orElseThrow();
 
-        assertThat(actualBooking).isNotNull()
-                .extracting(
-                        Booking::getStatus,
-                        Booking::getPrice
-                        )
-                .containsExactly(
-                        BookingStatus.CONFIRMED,
-                        price
-                );
+        assertThat(actualBooking.getStatus()).isEqualTo(BookingStatus.CONFIRMED);
+        assertThat(actualBooking.getPrice()).isEqualByComparingTo(price);
     }
 
     @Test
-    @DisplayName("")
-    void someAnotherTest(){
-        // todo add another test and test this class
-        // todo тест на не существующий полет
-        // todo тест на идемпотентность
+    @DisplayName("должен dlt")
+    void someAnotherTest() throws Exception {
+        SeatReservedEvent badEvent = SeatReservedEvent.of(
+                Long.MAX_VALUE,
+                UUID.randomUUID(),
+                "petrova",
+                "1FFAF",
+                "97ASG",
+                BigDecimal.valueOf(1250));
+
+        try (Consumer<String, PaymentCreatedEvent> consumer = createConsumer()) {
+            consumer.subscribe(List.of(KafkaTopics.PAYMENT_CREATED));
+            consumer.poll(Duration.ofMillis(500));
+
+            kafkaTemplate.send(KafkaTopics.SEAT_RESERVED, badEvent).get();
+
+            ConsumerRecords<String, PaymentCreatedEvent> emptyRecord =
+                    KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(3));
+
+            assertThat(emptyRecord).isEmpty();
+        }
+    }
+
+
+    @Test
+    @DisplayName("должен идемпотентность")
+    void shouldDontSendPaymentCreatedEventWhenBookingAlreadyConfirmed() throws Exception {
+        assertThat(booking.getPrice()).isNull();
+
+        BigDecimal price = BigDecimal.valueOf(1250);
+        SeatReservedEvent event = SeatReservedEvent.of(
+                booking.getId(),
+                booking.getBookingNumber(),
+                booking.getUsername(),
+                booking.getFlightNumber(),
+                booking.getSeatNumber(),
+                price);
+
+        try (Consumer<String, PaymentCreatedEvent> consumer = createConsumer()) {
+            consumer.subscribe(List.of(KafkaTopics.PAYMENT_CREATED));
+            consumer.poll(Duration.ofMillis(500));
+
+            kafkaTemplate.send(KafkaTopics.SEAT_RESERVED, event).get();
+
+            ConsumerRecord<String, PaymentCreatedEvent> firstRecord =
+                    KafkaTestUtils.getSingleRecord(consumer, KafkaTopics.PAYMENT_CREATED);
+
+            assertThat(firstRecord).isNotNull();
+
+            Booking actualBooking = bookingRepository.findById(booking.getId()).orElseThrow();
+
+            assertThat(actualBooking.getStatus()).isEqualTo(BookingStatus.CONFIRMED);
+            assertThat(actualBooking.getPrice()).isEqualByComparingTo(price);
+
+            kafkaTemplate.send(KafkaTopics.SEAT_RESERVED, event).get();
+
+            ConsumerRecords<String, PaymentCreatedEvent> secondRecord =
+                    KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(3));
+
+            assertThat(secondRecord).isEmpty();
+        }
+
+        Booking actualBooking = bookingRepository.findById(booking.getId()).orElseThrow();
+
+        assertThat(actualBooking.getStatus()).isEqualTo(BookingStatus.CONFIRMED);
+        assertThat(actualBooking.getPrice()).isEqualByComparingTo(price);
+
+        verify(bookingProducer, times(1)).sendPaymentCreated(any(PaymentCreatedEvent.class));
     }
 
     private Consumer<String, PaymentCreatedEvent> createConsumer() {
@@ -154,7 +221,7 @@ public class KafkaIntegrationTest {
         );
         consumerProps.put(
                 ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
-                "latest"
+                "earliest"
         );
 
         JsonDeserializer<PaymentCreatedEvent> jsonDeserializer
