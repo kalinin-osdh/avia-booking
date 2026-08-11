@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,11 +26,13 @@ import ru.kalinin.booking.entity.Booking;
 import ru.kalinin.booking.entity.enums.BookingStatus;
 import ru.kalinin.booking.kafka.BookingProducer;
 import ru.kalinin.booking.repository.BookingRepository;
+import ru.kalinin.common.exception.bookings.BookingNotFoundException;
 import ru.kalinin.common.kafka.event.payment.PaymentCreatedEvent;
 import ru.kalinin.common.kafka.event.seat.SeatReservedEvent;
 import ru.kalinin.common.kafka.topics.KafkaTopics;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -149,7 +152,12 @@ public class KafkaIntegrationTest {
                 "97ASG",
                 BigDecimal.valueOf(1250));
 
-        try (Consumer<String, PaymentCreatedEvent> consumer = createConsumer()) {
+        try (Consumer<String, SeatReservedEvent> dltConsumer = createDltConsumer();
+             Consumer<String, PaymentCreatedEvent> consumer = createConsumer()) {
+            dltConsumer.subscribe(List.of(KafkaTopics.SEAT_RESERVED + ".DLT"));
+            dltConsumer.poll(Duration.ofMillis(500));
+
+
             consumer.subscribe(List.of(KafkaTopics.PAYMENT_CREATED));
             consumer.poll(Duration.ofMillis(500));
 
@@ -159,6 +167,22 @@ public class KafkaIntegrationTest {
                     KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(3));
 
             assertThat(emptyRecord).isEmpty();
+
+            ConsumerRecord<String, SeatReservedEvent> record =
+                    KafkaTestUtils.getSingleRecord(dltConsumer, KafkaTopics.SEAT_RESERVED + ".DLT");
+
+            assertThat(record.value()).isNotNull()
+                    .isEqualTo(badEvent);
+
+            String actualExceptionClassName = new String(
+                    record.headers().lastHeader(KafkaHeaders.DLT_EXCEPTION_CAUSE_FQCN)
+                            .value(),
+                    StandardCharsets.UTF_8
+            );
+
+            System.out.println(actualExceptionClassName);
+
+            assertThat(actualExceptionClassName).isEqualTo(BookingNotFoundException.class.getName());
         }
     }
 
@@ -226,6 +250,33 @@ public class KafkaIntegrationTest {
 
         JsonDeserializer<PaymentCreatedEvent> jsonDeserializer
                 = new JsonDeserializer<>(PaymentCreatedEvent.class);
+
+        jsonDeserializer.addTrustedPackages("ru.kalinin.common.kafka.event");
+
+        return new DefaultKafkaConsumerFactory<>(
+                consumerProps,
+                new StringDeserializer(),
+                jsonDeserializer
+        ).createConsumer();
+    }
+
+    private Consumer<String, SeatReservedEvent> createDltConsumer() {
+        Map<String, Object> consumerProps = new HashMap<>();
+        consumerProps.put(
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                kafka.getBootstrapServers()
+        );
+        consumerProps.put(
+                ConsumerConfig.GROUP_ID_CONFIG,
+                "test-dlt-group-" + UUID.randomUUID()
+        );
+        consumerProps.put(
+                ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,
+                "earliest"
+        );
+
+        JsonDeserializer<SeatReservedEvent> jsonDeserializer
+                = new JsonDeserializer<>(SeatReservedEvent.class);
 
         jsonDeserializer.addTrustedPackages("ru.kalinin.common.kafka.event");
 
