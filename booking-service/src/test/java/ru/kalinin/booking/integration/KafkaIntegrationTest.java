@@ -142,8 +142,8 @@ public class KafkaIntegrationTest {
     }
 
     @Test
-    @DisplayName("должен dlt")
-    void someAnotherTest() throws Exception {
+    @DisplayName("Должен отправлять событие в DLT, если бронирование не существует")
+    void shouldSendEventToDltWhenBookingNotFound() throws Exception {
         SeatReservedEvent badEvent = SeatReservedEvent.of(
                 Long.MAX_VALUE,
                 UUID.randomUUID(),
@@ -180,16 +180,14 @@ public class KafkaIntegrationTest {
                     StandardCharsets.UTF_8
             );
 
-            System.out.println(actualExceptionClassName);
-
             assertThat(actualExceptionClassName).isEqualTo(BookingNotFoundException.class.getName());
         }
     }
 
 
     @Test
-    @DisplayName("должен идемпотентность")
-    void shouldDontSendPaymentCreatedEventWhenBookingAlreadyConfirmed() throws Exception {
+    @DisplayName("Не должен повторно отправлять PaymentCreatedEvent, если бронирование уже подтверждено")
+    void shouldNotSendPaymentCreatedEventWhenBookingAlreadyConfirmed() throws Exception {
         assertThat(booking.getPrice()).isNull();
 
         BigDecimal price = BigDecimal.valueOf(1250);
