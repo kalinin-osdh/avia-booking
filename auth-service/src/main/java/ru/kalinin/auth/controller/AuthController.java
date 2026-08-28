@@ -34,12 +34,12 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.refresh(request));
+        return ResponseEntity.ok(authService.refresh(request));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@AuthenticationPrincipal JwtUserPrincipal user) {
         authService.logout(user.username());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

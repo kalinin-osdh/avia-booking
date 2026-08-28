@@ -41,6 +41,7 @@
         <spring-kafka.version>3.2.5</spring-kafka.version>
         <telegram-bots.version>6.9.7.1</telegram-bots.version>
         <testcontainers.version>1.21.4</testcontainers.version>
+        <swagger.version>2.8.5</swagger.version>
     </properties>
 
     <dependencyManagement>

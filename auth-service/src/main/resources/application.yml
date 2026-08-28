@@ -38,6 +38,13 @@ jwt:
   refresh-token:
     expiration: 604800000
 
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    url: /openapi.yaml
+
 logging:
   level:
     ru.kalinin.auth: DEBUG

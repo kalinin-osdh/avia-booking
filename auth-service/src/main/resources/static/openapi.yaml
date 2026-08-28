@@ -1,0 +1,296 @@
+openapi: 3.1.0
+info:
+  title: Authentication service
+  description: |
+    ## REST API для регистрации и аутентификации пользователя
+    ### Возможности:
+    - Регистрация и аутентификация пользователей
+    ### Аутентификация
+    Используется **JWT** токен
+    
+    Получите токен через
+    - `/api/auth/login`
+
+    - `/api/auth/refresh`
+
+    и передайте его в `Authorization: Bearer <token>`
+  contact:
+    name: Калинин Вадим
+    email: kalinin.osdh@gmail.com
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: API Gateway
+tags:
+  - name: Authentication
+    description: Аутентификация и регистрация
+paths:
+  /api/auth/register:
+    post:
+      tags: [Authentication]
+      security: []
+      summary: Регистрация пользователя
+      description: |
+        Регистрация нового пользователя с ролью User.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+            examples:
+              success:
+                summary: Успешная регистрация
+                value:
+                  username: kalinin
+                  password: kalinin170823
+              failure:
+                summary: Ошибка валидации
+                value:
+                  username: kalinin
+                  password:
+      responses:
+        '201':
+          $ref: '#/components/responses/AuthResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                UserExists:
+                  summary: Ошибка при регистрации
+                  value:
+                    error: Пользователь уже существует
+                    message: "Пользователь с таким именем уже существует: kalinin"
+                MethodArgumentNotValid:
+                  summary: Ошибка валидации
+                  value:
+                    error: Ошибка валидации
+                    message: "password: Длина пароля минимум 8 символов"
+        '500':
+          $ref: '#/components/responses/Exception'
+
+  /api/auth/login:
+    post:
+      tags: [Authentication]
+      security: []
+      summary: Аутентификация пользователя
+      description:
+        Аутентификация пользователя.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+            examples:
+              success:
+                summary: Успешная аутентификация
+                value:
+                  username: kalinin
+                  password: kalinin170823
+              failure:
+                summary: Ошибка валидации
+                value:
+                  username: kalinin
+                  password:
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthResponse'
+        '400':
+          $ref: '#/components/responses/MethodArgumentNotValid'
+        '401':
+          $ref: '#/components/responses/BadCredentials'
+        '500':
+          $ref: '#/components/responses/Exception'
+
+  /api/auth/refresh:
+    post:
+      tags: [Authentication]
+      security: []
+      summary: Получение новой пары токенов
+      description:
+        Получить новый refresh и access токены с помощью старого refresh токена.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+            examples:
+              success:
+                summary: Успешное получение новой пары токенов
+                value:
+                  refreshToken: 9J1GvHNsUXPGS6uc7bYDXZC89MDtfIzhUgr_aEk21D8
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                RefreshTokenNotValid:
+                  summary: Ошибка при регистрации
+                  value:
+                    error: Refresh token is not valid
+                    message: Нужно провести повторную аутентификацию пользователя
+                MethodArgumentNotValid:
+                  summary: Ошибка валидации
+                  value:
+                    error: Ошибка валидации
+                    message: "refreshToken: Введите ваш Refresh Token"
+        '500':
+          $ref: '#/components/responses/Exception'
+
+  /api/auth/logout:
+    post:
+      tags: [Authentication]
+      security:
+        - bearerAuth: []
+      summary: Выход из учетной записи
+      description:
+        Выход из учетной записи - удаление refresh токена
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContentResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/Exception'
+components:
+  schemas:
+    AuthRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          minLength: 5
+          maxLength: 20
+          examples: [kalinin]
+          description: Уникальное имя пользователя
+        password:
+          type: string
+          minLength: 8
+          maxLength: 255
+          examples: [password]
+          description: Пароль пользователя
+
+    RefreshRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+          examples: [9J1GvHNsUXPGS6uc7bYDXZC89MDtfIzhUgr_aEk21D8]
+          description: Refresh token пользователя
+
+    AuthResponse:
+      type: object
+      required: [username, accessToken, refreshToken]
+      properties:
+        username:
+          type: string
+          description: Имя пользователя
+          examples: [username]
+        accessToken:
+          type: string
+          description: Access токен пользователя
+          examples: [eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsInVzZXJJZCI6NCwic3ViIjoia2FsaW5pbiIsImlhdCI6MTc4Nzk0NTE1MywiZXhwIjoxNzg3OTQ4NzUzfQ.my4CetKGqFkWw7Q68ZZocfzYezSFWA8TcHCiwWVCX8w]
+        refreshToken:
+          type: string
+          description: Refresh токен пользователя
+          examples: [9J1GvHNsUXPGS6uc7bYDXZC89MDtfIzhUgr_aEk21D8]
+
+    ErrorResponse:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+          description: Ошибка
+          examples: [error]
+        message:
+          type: string
+          description: Причина ошибки
+          examples: [message]
+
+  responses:
+    AuthResponse:
+      description: Данные для входа
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthResponse'
+
+    NoContentResponse:
+      description: No Content
+
+    MethodArgumentNotValid:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Ошибка валидации
+            message: "поле: описание"
+
+    UserExists:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Пользователь уже существует
+            message: "Пользователь с таким именем уже существует: <username>"
+
+    BadCredentials:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Неверный логин или пароль
+            message: Bad credentials
+
+    RefreshTokenNotValid:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Refresh token is not valid
+            message: Нужно провести повторную аутентификацию пользователя
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Unauthorized
+            message: JWT token is missing or invalid
+
+    Exception:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Внутренняя ошибка сервера
+            message: message
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Введите JWT токен в формате `<token>`

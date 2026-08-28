@@ -39,6 +39,23 @@ spring:
             - Path=/api/payment/**
           filters:
             - RewritePath=/api/payment(?<segment>/?.*), /api/v1/payment$\{segment}
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:8081"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - Content-Type
+              - Authorization
+              - Accept
+            allowCredentials: true
 
 logging:
   level:
